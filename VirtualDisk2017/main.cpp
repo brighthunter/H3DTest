@@ -1,7 +1,14 @@
 #include <cstdio>
 #include "VirtualDiskManager.h"
-int main()
+#include "PathUtil.h"
+void TestTool()
 {
+	auto test = PathUtil::GetFileName("E:/ÐéÄâ´ÅÅÌÏîÄ¿/test/ttt/../test2");
+	getchar();
+}
+int main()
+{	
+	//TestTool();
 	VirtualDiskManager *p = new VirtualDiskManager();
 	if (!p->Init())
 	{
@@ -13,10 +20,10 @@ int main()
 	while(true)
 	{
 		p->PrintCursor();
-		scanf_s("%s",str,512);
+		scanf_s("%[^\n]",str,512);
 		if (!p->analyzeCommond(str))
 			printf("Failed\n");
-
+		getchar();
 
 	}
 }

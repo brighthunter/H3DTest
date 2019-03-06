@@ -130,8 +130,10 @@
     <ClCompile Include="CommondRen.cpp" />
     <ClCompile Include="CommondSave.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="VirtualBlock.cpp" />
     <ClCompile Include="VirtualDiskManager.cpp" />
     <ClCompile Include="VirtualDiskManagerObserver.cpp" />
+    <ClCompile Include="VirtualFile.cpp" />
     <ClCompile Include="VirtualFolder.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -152,8 +154,10 @@
     <ClInclude Include="CommondSave.h" />
     <ClInclude Include="PathUtil.h" />
     <ClInclude Include="Tool\functor.h" />
+    <ClInclude Include="VirtualBlock.h" />
     <ClInclude Include="VirtualDiskManager.h" />
     <ClInclude Include="VirtualDiskManagerObserver.h" />
+    <ClInclude Include="VirtualFile.h" />
     <ClInclude Include="VirtualFolder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -9,5 +9,6 @@ CommondCls::~CommondCls()
 }
 bool CommondCls::analyzeCommond(std::vector<std::string> allSubs)
 {
-	return false;
+	system("cls");
+	return true;
 }

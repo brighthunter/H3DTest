@@ -91,7 +91,12 @@ bool CommondManager::Init()
 			m_CommondsVec.push_back(p);
 			break;
 		}
-		default:
+		case COMMOND_CLS:
+		{
+			Commond* p = new CommondCls(COMMOND_CLS);
+			m_CommondsVec.push_back(p);
+			break;
+		}		default:
 			break;
 		}
 	}
@@ -102,62 +107,62 @@ bool CommondManager::analyzeCommond(const char* userInput)
 	std::vector<std::string> allSubs;
 	PathUtil::SeperatePath(userInput, allSubs); 
 	std::string commondName = userInput; 
-	if (*allSubs.begin() == "dir")
+	if (allSubs.back() == "dir")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_DIR]->analyzeCommond(allSubs);
 	}
-	else if (*allSubs.begin() == "md")
+	else if (allSubs.back() == "md")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_MD]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0,2,"rd"))
+	else if (allSubs.back() == "rd")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_Rd]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 2, "cd"))
+	else if (allSubs.back() == "cd")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_CD]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 3,"del"))
+	else if (allSubs.back() == "del")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_DEL]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 4, "copy"))
+	else if (allSubs.back() == "copy")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_COPY]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 3, "ren"))
+	else if (allSubs.back() == "ren")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_REN]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 4, "move"))
+	else if (allSubs.back() == "move")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_MOVE]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 6, "mklink"))
+	else if (allSubs.back() == "mklink")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_MKLINK]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 4, "save"))
+	else if (allSubs.back() == "save")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_SAVE]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 4, "load"))
+	else if (allSubs.back() == "load")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_LOAD]->analyzeCommond(allSubs);
 	}
-	else if (commondName.compare(0, 3, "cls"))
+	else if (allSubs.back() == "cls")
 	{
 		allSubs.erase(allSubs.begin());
 		return 	m_CommondsVec[COMMOND_CLS]->analyzeCommond(allSubs);
