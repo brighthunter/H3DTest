@@ -6,7 +6,7 @@ class CommondCopy :public Commond
 public:
 	CommondCopy(CommondEnum type);
 	~CommondCopy();
-	virtual bool analyzeCommond(std::vector<std::string> allSubs);
+	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:
 
 };

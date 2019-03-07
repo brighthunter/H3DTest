@@ -6,7 +6,7 @@ class CommondRd :public Commond
 public:
 	CommondRd(CommondEnum type);
 	~CommondRd();
-	virtual bool analyzeCommond(std::vector<std::string> allSubs);
+	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:
 
 };

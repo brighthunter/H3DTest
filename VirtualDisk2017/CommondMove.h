@@ -6,7 +6,7 @@ class CommondMove :public Commond
 public:
 	CommondMove(CommondEnum type);
 	~CommondMove();
-	virtual bool analyzeCommond(std::vector<std::string> allSubs);
+	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:
 
 };

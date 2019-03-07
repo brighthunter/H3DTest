@@ -7,7 +7,7 @@ CommondDel::~CommondDel()
 {
 
 }
-bool CommondDel::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondDel::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

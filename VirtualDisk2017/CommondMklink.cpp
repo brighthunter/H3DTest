@@ -7,7 +7,7 @@ CommondMklink::CommondMklink(CommondEnum type)
 CommondMklink::~CommondMklink()
 {
 }
-bool CommondMklink::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondMklink::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

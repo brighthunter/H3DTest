@@ -7,7 +7,7 @@ CommondLoad::CommondLoad(CommondEnum type)
 CommondLoad::~CommondLoad()
 {
 }
-bool CommondLoad::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondLoad::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

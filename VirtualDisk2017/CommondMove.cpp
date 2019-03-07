@@ -7,7 +7,7 @@ CommondMove::CommondMove(CommondEnum type)
 CommondMove::~CommondMove()
 {
 }
-bool CommondMove::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondMove::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

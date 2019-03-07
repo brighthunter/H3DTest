@@ -6,7 +6,7 @@ class CommondMklink :public Commond
 public:
 	CommondMklink(CommondEnum type);
 	~CommondMklink();
-	virtual bool analyzeCommond(std::vector<std::string> allSubs);
+	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:
 
 };

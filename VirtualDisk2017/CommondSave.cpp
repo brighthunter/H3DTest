@@ -7,7 +7,7 @@ CommondSave::CommondSave(CommondEnum type)
 CommondSave::~CommondSave()
 {
 }
-bool CommondSave::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondSave::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

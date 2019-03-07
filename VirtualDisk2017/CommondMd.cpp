@@ -10,7 +10,7 @@ CommondMd::CommondMd(CommondEnum type)
 CommondMd::~CommondMd()
 {
 }
-bool CommondMd::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondMd::analyzeCommond(std::list<std::string> allSubs)
 {
 	bool res = true;
 	for (auto it = allSubs.begin(); it != allSubs.end(); it++)

@@ -104,7 +104,7 @@ bool CommondManager::Init()
 }
 bool CommondManager::analyzeCommond(const char* userInput)
 {
-	std::vector<std::string> allSubs;
+	std::list<std::string> allSubs;
 	PathUtil::SeperatePath(userInput, allSubs); 
 	std::string commondName = userInput; 
 	if (allSubs.back() == "dir")
@@ -129,44 +129,47 @@ bool CommondManager::analyzeCommond(const char* userInput)
 	}
 	else if (allSubs.back() == "del")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_DEL]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "copy")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_COPY]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "ren")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_REN]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "move")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_MOVE]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "mklink")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_MKLINK]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "save")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_SAVE]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "load")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_LOAD]->analyzeCommond(allSubs);
 	}
 	else if (allSubs.back() == "cls")
 	{
-		allSubs.erase(allSubs.begin());
+		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_CLS]->analyzeCommond(allSubs);
 	}
 	else
+	{
+		printf("Î´ÖªÃüÁî\n");
 		return false;
+	}
 }

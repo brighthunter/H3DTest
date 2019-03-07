@@ -7,7 +7,7 @@ CommondRen::CommondRen(CommondEnum type)
 CommondRen::~CommondRen()
 {
 }
-bool CommondRen::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondRen::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

@@ -6,7 +6,7 @@ class CommondDel :public Commond
 public:
 	CommondDel(CommondEnum type);
 	~CommondDel();
-	virtual bool analyzeCommond(std::vector<std::string> allSubs);
+	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:
 
 };

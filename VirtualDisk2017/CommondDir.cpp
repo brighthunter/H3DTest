@@ -7,7 +7,7 @@ CommondDir::CommondDir(CommondEnum type)
 CommondDir::~CommondDir()
 {
 }
-bool CommondDir::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondDir::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }

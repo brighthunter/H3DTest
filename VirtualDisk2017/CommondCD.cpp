@@ -7,7 +7,7 @@ CommondCD::CommondCD(CommondEnum type)
 CommondCD::~CommondCD()
 {
 }
-bool CommondCD::analyzeCommond(std::vector<std::string> allSubs)
+bool CommondCD::analyzeCommond(std::list<std::string> allSubs)
 {
 	return false;
 }
