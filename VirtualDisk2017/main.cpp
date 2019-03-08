@@ -20,6 +20,16 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("copy @e:\\Test\\t.txt Test");
 	p->analyzeCommond("copy Test\\t.txt Test1");
 	p->analyzeCommond("copy Test1\\t.txt @e:\\Test\\1\\");
+
+	/*MEMORYSTATUSEX sysMemStatus;
+	sysMemStatus.dwLength = sizeof(sysMemStatus);
+	if (!GlobalMemoryStatusEx(&sysMemStatus))
+	{
+		printf("GlobalMemoryStatusEx fail\n");
+		return;
+	}
+	unsigned long long touse = sysMemStatus.ullTotalVirtual;*/
+	getchar();
 }
 int main()
 {	

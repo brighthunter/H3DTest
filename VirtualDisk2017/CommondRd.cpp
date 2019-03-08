@@ -10,12 +10,12 @@ CommondRd::~CommondRd()
 }
 bool CommondRd::analyzeCommond(std::list<std::string> allSubs)
 {
-	bool s = false;
+	int s = 0;
 	for (auto it = allSubs.begin(); it != allSubs.end();)
 	{
 		if (*it == "\\s")
 		{
-			s = true;
+			s = 1;
 			it = allSubs.erase(it);
 		}
 		else

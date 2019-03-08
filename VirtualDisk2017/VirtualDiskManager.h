@@ -17,6 +17,7 @@ public:
 	void GetCursorWithoutRoot(std::string& cursor);
 	void AddCursor(const char* path);
 	void ClearCursor();
+	void PrintDir(const char* userInput,int state);
 	bool analyzeCommond(const char* userInput);
 	bool createPath(const char* userInput);
 	bool deletePath(const char* userInput,bool s = false);
@@ -29,8 +30,9 @@ public:
 	bool CopyVirtualToRealDisk(std::string src, std::string dst);
 	bool CopyRealDiskToRealDisk(std::string src, std::string dst);
 	bool CopyVirtualToVirtual(std::string src, std::string dst);
-	bool CopyToCache(std::string src,std::string dst);
 	void Rename(const char* userInput, const char* name);
+	void SetCursor(const char* userInput);
+	void DeleteVirtualFile(const char* userInput,int s);
 private:
 	VirtualFolder * root;
 	CommondManager* m_pCommondmanager;

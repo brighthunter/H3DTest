@@ -1,4 +1,5 @@
 #include "CommondCd.h"
+#include "VirtualDiskManagerObserver.h"
 CommondCD::CommondCD(CommondEnum type)
 	:Commond(type)
 {
@@ -9,5 +10,8 @@ CommondCD::~CommondCD()
 }
 bool CommondCD::analyzeCommond(std::list<std::string> allSubs)
 {
-	return false;
+	if (allSubs.size() != 1)
+		return false;
+	VirtualDiskManagerObserver::GetInstance()->Notify_SetCursor(allSubs.back().c_str());
+	return true;
 }

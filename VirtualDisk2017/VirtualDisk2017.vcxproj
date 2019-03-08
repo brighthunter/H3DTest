@@ -153,6 +153,7 @@
     <ClInclude Include="CommondRen.h" />
     <ClInclude Include="CommondSave.h" />
     <ClInclude Include="PathUtil.h" />
+    <ClInclude Include="StringUtil.h" />
     <ClInclude Include="Tool\functor.h" />
     <ClInclude Include="VirtualBlock.h" />
     <ClInclude Include="VirtualDiskManager.h" />

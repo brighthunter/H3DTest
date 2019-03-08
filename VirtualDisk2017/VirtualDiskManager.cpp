@@ -17,11 +17,19 @@ void VirtualDiskManager::RegisterCallback()
 	Functor1wRet<const char*, bool> func_createPath = functor_ret(*this, &VirtualDiskManager::createPath);
 	Functor2wRet<const char*, bool,bool>	func_deletePath = functor(*this, &VirtualDiskManager::deletePath);
 	Functor2wRet<std::string, std::string, bool>	func_copyPath = functor(*this, &VirtualDiskManager::copyPath);
+	Functor2<const char*, const char*>    func_rename = functor(*this, &VirtualDiskManager::Rename);
 	Functor1<const char*> func_AddCursor = functor(*this, &VirtualDiskManager::AddCursor);
+	Functor1<const char*> func_setCursor = functor(*this, &VirtualDiskManager::SetCursor);
+	Functor2<const char*,int> func_delteeVirtualFile = functor(*this, &VirtualDiskManager::DeleteVirtualFile);
+	Functor2<const char*,int> func_printDir = functor(*this, &VirtualDiskManager::PrintDir);
 	VirtualDiskManagerObserver::GetInstance()->Register_CreatePath(func_createPath);
 	VirtualDiskManagerObserver::GetInstance()->Register_AddCursor(func_AddCursor);
 	VirtualDiskManagerObserver::GetInstance()->Register_DeletePath(func_deletePath);
 	VirtualDiskManagerObserver::GetInstance()->Register_CopyPath(func_copyPath);
+	VirtualDiskManagerObserver::GetInstance()->Register_Rename(func_rename);
+	VirtualDiskManagerObserver::GetInstance()->Register_SetCursor(func_setCursor);
+	VirtualDiskManagerObserver::GetInstance()->Register_DeleteVirtualFile(func_delteeVirtualFile);
+	VirtualDiskManagerObserver::GetInstance()->Register_PrintDir(func_printDir);
 }
 bool VirtualDiskManager::Init()
 {
@@ -31,13 +39,15 @@ bool VirtualDiskManager::Init()
 	m_sdiskName = "v:";
 	RegisterCallback();
 	root = new VirtualFolder();
+	root->SetName("v:");
+	root->SetRoot(true);
 	return res;
 }
 void VirtualDiskManager::PrintCursor()
 {
 	std::string cursor;
-	cursor += m_sdiskName + '\\';
-	
+	//cursor += m_sdiskName + '\\';
+	cursor += root->GetDir();
 	cursor += ">";
 	printf(cursor.c_str());
 }
@@ -62,6 +72,15 @@ void VirtualDiskManager::ClearCursor()
 {
 	// root->ClearCursour();
 }
+void VirtualDiskManager::PrintDir(const char* userInput,int state)
+{
+	std::string fullPathfile;
+	getFullPath(fullPathfile, userInput);
+	std::list<std::string> subfiles;
+	PathUtil::SeperateFile(fullPathfile, subfiles);
+	root->PrintDir(subfiles, state);
+	
+}
 bool VirtualDiskManager::analyzeCommond(const char* userInput)
 {
 	if (!m_pCommondmanager)
@@ -76,13 +95,8 @@ bool VirtualDiskManager::createPath(const char* userInput)
 	std::string fullpath;
 	getFullPath(fullpath, userInput);
 	std::list<std::string> subfiles;
+	PathUtil::BackslashToslash(fullpath);
 	PathUtil::SeperateFile(fullpath, subfiles);
-	auto tmp = *subfiles.begin();
-	subfiles.pop_back();
-	if (!subfiles.size())
-	{
-		return true;
-	}
 	return root->createPath(subfiles);
 }
 bool VirtualDiskManager::deletePath(const char* userInput,bool s)
@@ -145,6 +159,11 @@ bool VirtualDiskManager::getFullPathWithoutRoot(std::string &fullpath, const cha
 {
 	std::string slashPath = userInput;
 	PathUtil::BackslashToslash(slashPath);
+	if (slashPath.find("v:/") == 0)
+	{
+		fullpath = userInput;
+		return true;
+	}
 	GetCursorWithoutRoot(fullpath);
 	fullpath += userInput;
 	return true;
@@ -158,14 +177,13 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 	}
 	std::list < std::string > realFiles;
 	PathUtil::BackslashToslash(src);
-	/*if (PathIsDirectory(src.c_str()))
+	if (PathIsDirectory(src.c_str()))
 	{
 		PathUtil::GetAllDirAndFiles(src, realFiles);
 		for (auto it = realFiles.begin(); it != realFiles.end(); it++)
 		{
 			if (PathIsDirectory((*it).c_str()))
 			{
-				std::list < std::string > _paths;
 			}
 			else
 			{
@@ -176,6 +194,8 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				void* mem = malloc(fsize);
 				fread_s(mem, fsize, fsize, 1, _file);
 				fclose(_file);
+				fopen_s(&_file, (*it).c_str(), "wb");
+				
 				free(mem);
 			}
 
@@ -213,7 +233,7 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				fread_s(mem, fsize, fsize, 1, _file);
 				fclose(_file);
 				fopen_s(&_file, tmp.c_str(), "wb");
-				fwrite()
+				fwrite(mem, fsize, 1, _file);
 				free(mem);
 
 			}
@@ -224,7 +244,7 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 			printf("预拷贝路径不存在\n");
 			return false;
 		}
-	}*/
+	}
 	return true;
 }
 bool VirtualDiskManager::CopyVirtualToVirtual(std::string src, std::string dst)
@@ -232,7 +252,7 @@ bool VirtualDiskManager::CopyVirtualToVirtual(std::string src, std::string dst)
 	std::list < std::string > dstPaths;
 	PathUtil::BackslashToslash(dst);
 	std::string fulldstPath;
-	getFullPathWithoutRoot(fulldstPath,dst.c_str());
+	getFullPath(fulldstPath,dst.c_str());
 	PathUtil::SeperateFile(fulldstPath, dstPaths);
 	if (!root->FindPath(dstPaths))
 	{
@@ -242,7 +262,7 @@ bool VirtualDiskManager::CopyVirtualToVirtual(std::string src, std::string dst)
 	//src
 	std::list < std::string > srcPaths;
 	std::string fullsrcPath;
-	getFullPathWithoutRoot(fullsrcPath, src.c_str());
+	getFullPath(fullsrcPath, src.c_str());
 	PathUtil::BackslashToslash(fullsrcPath);
 	PathUtil::SeperateFile(fullsrcPath, srcPaths);
 	std::string srcPath;
@@ -298,7 +318,7 @@ bool VirtualDiskManager::CopyVirtualToRealDisk(std::string src, std::string dst)
 	//src
 	std::list < std::string > srcPaths;
 	std::string fullsrcPath;
-	getFullPathWithoutRoot(fullsrcPath, src.c_str());
+	getFullPath(fullsrcPath, src.c_str());
 	PathUtil::BackslashToslash(fullsrcPath);
 	PathUtil::SeperateFile(fullsrcPath, srcPaths);
 	std::string srcPath;
@@ -351,8 +371,10 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 {
 	//dst
 	std::list < std::string > dstFiles;
-	PathUtil::BackslashToslash(dst);
-	PathUtil::SeperateFile(dst, dstFiles);
+	std::string fullDst;
+	getFullPath(fullDst, dst.c_str());
+	PathUtil::BackslashToslash(fullDst);
+	PathUtil::SeperateFile(fullDst, dstFiles);
 	if (!root->FindPath(dstFiles))
 	{
 		printf("虚拟磁盘目的路径不存在\n");
@@ -369,6 +391,7 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 			if (PathIsDirectory((*it).c_str()))
 			{
 				std::list < std::string > _paths;
+				PathUtil::SeperateFile((*it).c_str(), _paths);
 				root->createPath(_paths);
 			}
 			else
@@ -438,10 +461,23 @@ void VirtualDiskManager::Rename(const char* userInput, const char* name)
 	getFullPath(fullpath, userInput);
 	std::list < std::string > virtualFiles;
 	PathUtil::SeperatePath(fullpath, virtualFiles);
-	/*if(root->FindPath(virtualFiles))
-		root->RenamePath(virtualFiles, name);
-	else
-	{
+	root->RenamePathFile(name, virtualFiles);
+	
+}
+void VirtualDiskManager::SetCursor(const char* userInput)
+{
+	std::string fullPath;
+	getFullPath(fullPath, userInput);
+	std::list<std::string> subfiles;
+	PathUtil::SeperateFile(fullPath, subfiles);
+	root->SetCursor(subfiles);
 
-	}*/
+}
+void VirtualDiskManager::DeleteVirtualFile(const char* userInput,int s)
+{
+	std::string fullPath;
+	getFullPath(fullPath, userInput);
+	std::list<std::string> subfiles;
+	PathUtil::SeperateFile(fullPath, subfiles);
+	root->DeleteVirtualFile(subfiles,s);
 }
