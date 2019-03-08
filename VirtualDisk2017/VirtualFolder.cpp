@@ -606,19 +606,27 @@ void VirtualFolder::PrintMessage(int state)
 	int fileNum = 0;
 	int dirNum = 0;
 	int allfileSize = 0;
+	std::list<VirtualBlock*> subDirs;
 	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
 	{
 		if (it->second->IsPath())
 		{
+			if (!(state & 0x1))
+			{
+				subDirs.push_back(it->second);
+			}
 			it->second->PrintPathMessage(true);
 			++dirNum;
 		}
 		else
 		{
-			it->second->PrintMessage();
-			int size = it->second->GetFileSzie();
-			allfileSize += size;
-			++fileNum;
+			if (!(state & 0x10))
+			{
+				it->second->PrintMessage();
+				int size = it->second->GetFileSzie();
+				allfileSize += size;
+				++fileNum;
+			}
 		}
 	}
 	MEMORYSTATUSEX sysMemStatus;
@@ -632,5 +640,8 @@ void VirtualFolder::PrintMessage(int state)
 	StringUtil::AddDot(ullstr);
 	printf("               %d 个文件%19d 字节\n", fileNum, allfileSize);
 	printf("               %d 个目录%19s 可用字节\n", fileNum, ullstr.c_str());
-
+	for (auto it = subDirs.begin(); it != subDirs.end(); it++)
+	{
+		(*it)->PrintMessage(state);
+	}
 }

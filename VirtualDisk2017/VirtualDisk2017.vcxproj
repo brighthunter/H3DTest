@@ -135,6 +135,7 @@
     <ClCompile Include="VirtualDiskManagerObserver.cpp" />
     <ClCompile Include="VirtualFile.cpp" />
     <ClCompile Include="VirtualFolder.cpp" />
+    <ClCompile Include="VirtualMKLink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Commond.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="VirtualDiskManagerObserver.h" />
     <ClInclude Include="VirtualFile.h" />
     <ClInclude Include="VirtualFolder.h" />
+    <ClInclude Include="VirtualMKLink.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
