@@ -33,8 +33,13 @@ public:
 	void Rename(const char* userInput, const char* name);
 	void SetCursor(const char* userInput);
 	void DeleteVirtualFile(const char* userInput,int s);
+	//Mklink
+	void MkLink(const char* src, const char* dst);
+	void Save(const char* dst);
+	void Load(const char* src);
+	void Move(std::list<std::string> src, std::list<std::string> dst);
 private:
-	VirtualFolder * root;
+	VirtualFolder * m_root;
 	CommondManager* m_pCommondmanager;
 	std::string m_sdiskName;
 };

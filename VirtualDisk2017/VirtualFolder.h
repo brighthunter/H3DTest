@@ -34,7 +34,18 @@ public:
 	virtual VirtualBlock* GetVirtualPoint(std::list<std::string>subfiles);
 	virtual void SetRoot(bool broot) { m_broot = broot; m_bCursor = true; }
 	virtual void PrintPathMessage(bool hasName);
-	virtual void PrintMessage(int state);
+	virtual void PrintMessage(std::list<std::string> subfiles, int state);
+	virtual bool MkLink(std::list<std::string> src, std::list<std::string> dst,VirtualBlock* root);
+	virtual void Save(std::string dst);
+	virtual void Load(std::string src);
+	virtual int GetChildrenSize();
+	void Clear();
+	void ClearMap();
+	void Combine(VirtualBlock*pchild, int state);
+	void GetChildren(std::list<VirtualBlock*>&pchildren);
+	void Move(std::list<std::string> src, std::list<std::string> dst,int state);
+	void EraseChild(std::string);
+	void CopyForMove(VirtualBlock*,int state);
 private:
 	std::map<std::string, VirtualBlock*> m_vfChildren;
 	bool m_bCursor = false;

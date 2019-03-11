@@ -20,7 +20,8 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("copy @e:\\Test\\t.txt Test");
 	p->analyzeCommond("copy Test\\t.txt Test1");
 	p->analyzeCommond("copy Test1\\t.txt @e:\\Test\\1\\");
-
+	p->analyzeCommond("save @e:\\SaveTest");
+	p->analyzeCommond("load @e:\\Test");
 	/*MEMORYSTATUSEX sysMemStatus;
 	sysMemStatus.dwLength = sizeof(sysMemStatus);
 	if (!GlobalMemoryStatusEx(&sysMemStatus))

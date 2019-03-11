@@ -29,8 +29,17 @@ public:
 	virtual bool SetCursor() { return false; }
 	virtual bool ClearCursor() { return true; }
 	virtual VirtualBlock* GetVirtualPoint(std::list<std::string>subfiles);
-	virtual void PrintMessage(int state);
+	virtual void PrintMessage(std::list<std::string> subfiles, int state);
 	virtual void PrintPathMessage(bool hasName) { return; }
+	virtual bool MkLink(std::list<std::string> src, std::list<std::string> dst, VirtualBlock* root) { return false; }
+	virtual void Save(std::string dst);
+	virtual void Load(std::string src);
+	virtual void Clear() {}
+	virtual void ClearMap() {};
+	virtual void EraseChild(std::string cname);
+	virtual void CopyForMove(VirtualBlock*, int state) { return; }
+	virtual void Combine(VirtualBlock*pchild, int state);
+	virtual int GetChildrenSize() { return 0; }
 private:
 	void* m_mem = nullptr;
 	int m_size = 0;

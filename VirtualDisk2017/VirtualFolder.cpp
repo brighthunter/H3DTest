@@ -1,8 +1,10 @@
 #include "VirtualFolder.h"
 #include "VirtualFile.h"
+#include "VirtualMKLink.h"
 #include "VirtualDiskManagerObserver.h"
 #include <Windows.h>
 #include "StringUtil.h"
+#include "PathUtil.h"
 VirtualFolder::VirtualFolder(void)
 {
 }
@@ -317,7 +319,10 @@ bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, std::list<std::strin
 	auto p = GetVirtualPoint(subfiles);
 	if (!p)
 	{
-		printf("路径不存在\n");
+		auto dstfileName = subfiles.front();
+		subfiles.pop_front();
+		auto fatherPath = subfiles.front();
+		printf("虚拟文件%s的父路径%s不存在\n", dstfileName.c_str(), fatherPath.c_str());
 		return false;
 	}
 	if (p->IsPath())
@@ -527,22 +532,20 @@ bool VirtualFolder::ClearCursor()
 bool VirtualFolder::PrintDir(std::list<std::string>subfiles, int state)
 {
 	auto p = GetVirtualPoint(subfiles);
+	
 	if (!p)
 	{
 		printf("路径不存在\n");
+		return false;
 	}
-	if (p->IsPath() && !p->IsRoot())
+	subfiles.pop_back();
+	if (p->IsPath())
 	{
-		p->PrintPathMessage(false);
-		p->PrintMessage(state);
+		p->PrintMessage(subfiles,state);
 	}
-	else if (p->IsRoot())
+	else 
 	{
-		p->PrintMessage(state);
-	}
-	else if(!p->IsPath())
-	{
-		p->PrintMessage();
+		p->PrintMessage(subfiles);
 	}
 
 	//if (!FindPath(subfiles))
@@ -601,8 +604,19 @@ void VirtualFolder::PrintPathMessage(bool hasName)
 		printf("%s  %s    <DIR>          %s\n", m_datetime, m_daytime, m_name.c_str());
 	}
 }
-void VirtualFolder::PrintMessage(int state) 
+void VirtualFolder::PrintMessage(std::list<std::string> subfiles,int state)
 {
+	std::string printPath;
+	for (auto it = subfiles.begin(); it != subfiles.end(); it++)
+	{
+		printPath += *it + "\\" ;
+	}
+	printPath += m_name;
+	printf("\n%s的目录\n\n", printPath.c_str());
+	if (!IsRoot())
+	{
+		PrintPathMessage(false);
+	}
 	int fileNum = 0;
 	int dirNum = 0;
 	int allfileSize = 0;
@@ -611,7 +625,7 @@ void VirtualFolder::PrintMessage(int state)
 	{
 		if (it->second->IsPath())
 		{
-			if (!(state & 0x1))
+			if (state & 0x1)
 			{
 				subDirs.push_back(it->second);
 			}
@@ -622,7 +636,7 @@ void VirtualFolder::PrintMessage(int state)
 		{
 			if (!(state & 0x10))
 			{
-				it->second->PrintMessage();
+				it->second->PrintMessage(subfiles,state);
 				int size = it->second->GetFileSzie();
 				allfileSize += size;
 				++fileNum;
@@ -642,6 +656,164 @@ void VirtualFolder::PrintMessage(int state)
 	printf("               %d 个目录%19s 可用字节\n", fileNum, ullstr.c_str());
 	for (auto it = subDirs.begin(); it != subDirs.end(); it++)
 	{
-		(*it)->PrintMessage(state);
+		(*it)->PrintMessage(subfiles,state);
+	}
+}
+bool VirtualFolder::MkLink(std::list<std::string> src, std::list<std::string> dst, VirtualBlock* root)
+{
+	if (dst.size() == 0)
+	{
+		printf("路径为空\n");
+		return false;
+	}
+	if (m_name == dst.back())
+	{
+		dst.pop_back();
+		auto tmp = dst.back();
+		if (m_vfChildren.find(dst.back()) != m_vfChildren.end())
+		{
+			if (dst.size() == 1)
+			{
+				printf("路径已存在\n");
+				return false;
+			}
+			m_vfChildren[tmp]->MkLink(src,dst, root);
+		}
+		else
+		{
+			auto link = new VirtualMKLink();
+			link->Init(src, root);
+			link->SetName(tmp.c_str());
+			m_vfChildren[tmp] = link;
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+void VirtualFolder::Save(std::string dst)
+{
+	std::string dstPath;
+	if (m_broot)
+	{
+		dstPath = dst + std::string("/") + "v";
+	}
+	else
+	{
+		dstPath = dst + std::string("/") + m_name;
+	}
+	CreateDirectory(dstPath.c_str(),NULL);
+	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
+	{
+		it->second->Save(dstPath);
+	}
+}
+void VirtualFolder::Load(std::string src)
+{
+	std::list<std::string> allFiles;
+	PathUtil::GetAllDirAndFiles(src, allFiles);
+	return;
+}
+void VirtualFolder::Clear()
+{
+	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
+	{
+		it->second->Clear();
+		delete it->second;
+	}
+	m_vfChildren.clear();
+}
+void VirtualFolder::Move(std::list<std::string> src,std::list<std::string> dst, int state)
+{
+	auto psrc = GetVirtualPoint(src);
+	if (!psrc)
+	{
+		printf("移动源路径不存在\n");
+		return;
+	}
+	auto pdst = GetVirtualPoint(dst);
+	if (!pdst)
+	{
+		printf("移动目的路径不存在\n");
+		return;
+	}
+	src.pop_front();
+	auto psrcfather = GetVirtualPoint(src);
+	pdst->CopyForMove(psrc, state);
+	if (!psrc->GetChildrenSize())
+	{
+		psrcfather->EraseChild(psrc->GetName());	
+	}
+}
+void VirtualFolder::EraseChild(std::string cname)
+{
+	if (m_vfChildren.find(cname) == m_vfChildren.end())
+		return;
+	m_vfChildren.erase(cname);
+
+}
+void VirtualFolder::CopyForMove(VirtualBlock* pchild,int state)
+{
+	if (m_vfChildren.find(pchild->GetName()) != m_vfChildren.end())
+	{
+		if (pchild->IsPath() && m_vfChildren[pchild->GetName()]->IsPath())
+		{
+			m_vfChildren[pchild->GetName()]->Combine(pchild, state);
+		
+		}
+		else if(state &0x1)
+		{
+			delete m_vfChildren[pchild->GetName()];
+			m_vfChildren[pchild->GetName()] = pchild;
+		}
+		else
+		{
+
+		}
+	}
+	else
+	{
+		m_vfChildren[pchild->GetName()] = pchild;
+	}
+}
+
+void VirtualFolder::ClearMap()
+{
+	m_vfChildren.clear();
+}
+int VirtualFolder::GetChildrenSize()
+{
+	return m_vfChildren.size();
+}
+void VirtualFolder::Combine(VirtualBlock* pComb, int state)
+{
+	 VirtualFolder* p = (VirtualFolder*)pComb;
+	 std::list<VirtualBlock*> clist;
+	 p->GetChildren(clist);
+	 for (auto it = clist.begin(); it != clist.end(); it++)
+	 {
+		 if (m_vfChildren.find((*it)->GetName()) != m_vfChildren.end())
+		 {
+			 m_vfChildren[(*it)->GetName()]->CopyForMove(*it, state);
+			 if (!(*it)->GetChildrenSize())
+			 {
+				 p->EraseChild((*it)->GetName());
+			 }	
+		 }
+		 else
+		 {
+			 m_vfChildren[(*it)->GetName()] = *it;
+		 }
+	 }
+}
+void VirtualFolder::GetChildren(std::list<VirtualBlock*> &pchildren)
+{
+	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
+	{
+		pchildren.push_back(it->second);
 	}
 }

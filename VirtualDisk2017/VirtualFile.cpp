@@ -40,9 +40,30 @@ VirtualBlock* VirtualFile::GetVirtualPoint(std::list<std::string>subfiles)
 	}
 	return nullptr;
 }
-void VirtualFile::PrintMessage(int state)
+void VirtualFile::PrintMessage(std::list<std::string> subfiles, int state)
 {
 	auto strMemsize = std::to_string(m_size);
 	StringUtil::AddDot(strMemsize);
-	printf("%s  %s              %19s%s\n", m_datetime, m_daytime, strMemsize.c_str(), m_name.c_str());
+	printf("%s  %s              %19s %s\n", m_datetime, m_daytime, strMemsize.c_str(), m_name.c_str());
+}
+void VirtualFile::Save(std::string dst)
+{
+	std::string dstName = dst + "/" + m_name;
+	FILE* _file;
+	fopen_s(&_file, dstName.c_str(), "wb");
+	fwrite(m_mem, m_size, 1, _file);
+	fclose(_file);
+}
+void VirtualFile::Load(std::string src)
+{
+
+}
+void VirtualFile::EraseChild(std::string cname)
+{
+	return;
+}
+
+void VirtualFile::Combine(VirtualBlock*pchild, int state)
+{
+	return;
 }

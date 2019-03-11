@@ -1,24 +1,27 @@
 #ifndef _VirtualMKLink_H_
 #define _VirtualMKLink_H_
 #include "VirtualFolder.h"
-class VirtualMKLink :public VirtualFolder
+class VirtualMKLink :public VirtualBlock
 {
 public:
 	VirtualMKLink();
 	~VirtualMKLink();
 	virtual std::string GetDir() { return ""; };
-	virtual bool createPath(std::list<std::string> subfiles) { return false; }
-	virtual bool deletePath(std::list<std::string> subfiles, int s = 0) { return false; }
-	virtual bool DeleteVirtualFile(std::list<std::string> subfiles, int s = 0) { return false; }
-	virtual bool DeleteVirtualFile(int s) { return false; }
-	virtual bool IsPathEmpty() { return false; }
-	virtual bool IsPath() { return false; }
-	virtual bool IsRoot() { return false; }
-	virtual bool FindPath(std::list<std::string> subfiles) { return false; }
-	virtual bool FindPathFile(std::list<std::string> subfiles) { return false; }
-	virtual bool CreateVirtualFile(void *mem, int fsize, const char* dstName) { return false; }
-	virtual bool Init() { return true; }
-	/*virtual bool GetAllFile(std::list<std::string>paths, std::list<std::string>& files);
+	virtual bool createPath(std::list<std::string> subfiles);
+	virtual bool deletePath(std::list<std::string> subfiles, int s = 0);
+	virtual bool DeleteVirtualFile(std::list<std::string> subfiles, int s = 0);
+	virtual bool DeleteVirtualFile(int s);
+	virtual bool IsPathEmpty();
+	virtual bool IsPath() { return m_isPath; };
+	virtual bool IsRoot();
+	virtual bool FindPath(std::list<std::string> subfiles);
+	virtual bool FindPathFile(std::list<std::string> subfiles);
+	virtual bool CreateVirtualFile(void *mem, int fsize, const char* dstName);
+	virtual bool Init();
+	bool Init(std::list<std::string> linkPath, VirtualBlock* root);
+	virtual void SetRoot(VirtualBlock* root) { m_root = root; }
+	virtual void SetLinkPath(VirtualBlock* root) { m_root = root; }
+	virtual bool GetAllFile(std::list<std::string>paths, std::list<std::string>& files);
 	virtual bool GetAllFile(std::list<std::string>& files) ;
 	virtual bool GetFileMem(std::list<std::string> srcPaths, void** mem, int& size) ;
 	virtual bool GetFileMem(void** mem, int& size);
@@ -27,12 +30,21 @@ public:
 	virtual bool SetCursor(std::list<std::string>subfiles);
 	virtual bool SetCursor();
 	virtual bool ClearCursor();
-	virtual VirtualBlock* GetVirtualPoint(std::list<std::string>subfiles);
 	virtual void PrintPathMessage(bool hasName);
-	virtual void PrintMessage(int state = 0);*/
+	virtual void PrintMessage(std::list<std::string> subfiles, int state = 0);
+	VirtualBlock* GetVirtualPoint(std::list<std::string>subfiles);
+	bool MkLink(std::list<std::string> src, std::list<std::string> dst, VirtualBlock* root);
+	virtual void Save(std::string dst);
+	virtual void Clear();
+	virtual void EraseChild(std::string);
+	virtual void CopyForMove(VirtualBlock*, int state);
+	virtual void ClearMap(){ return; }
+	virtual void Combine(VirtualBlock*pchild, int state);
+	int GetChildrenSize();
 private:
 	VirtualBlock* m_root;
 	std::list<std::string> m_paths;
+	bool m_isPath;
 };
 
 

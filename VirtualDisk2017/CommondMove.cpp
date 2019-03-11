@@ -9,5 +9,6 @@ CommondMove::~CommondMove()
 }
 bool CommondMove::analyzeCommond(std::list<std::string> allSubs)
 {
-	return false;
+	//VirtualDiskManagerObserver::GetInstance()->Notify_Mklink(allSubs.back().c_str(), (*allSubs.begin()).c_str());
+	return true;
 }

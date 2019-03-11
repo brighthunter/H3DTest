@@ -15,6 +15,9 @@ public:
 	void Register_SetCursor(Functor1<const char*> func) { m_func5 = func; }
 	void Register_DeleteVirtualFile(Functor2<const char*, int>func) { m_func6 = func; }
 	void Register_PrintDir(Functor2<const char*,int> func) { m_func7 = func; }
+	void Register_Mklink(Functor2<const char*, const char*> func) { m_func8 = func; }
+	void Register_Save(Functor1<const char*> func) { m_func9 = func; }
+	void Register_Load(Functor1<const char*> func) { m_func10 = func; }
 	//Notify
 	bool Notify_CreatePath(const char* userInput) { return m_func(userInput); }
 	void Notify_AddCursor(const char* vf) { m_func1(vf); }
@@ -24,6 +27,9 @@ public:
 	void Notify_SetCursor(const char* dst) { m_func5(dst); }
 	void Notify_DeleteVirtualFile(const char* name,int s) { m_func6(name,s); }
 	void Notify_PrintDir(const char* userInput, int state) { m_func7(userInput, state); }
+	void Notify_Mklink(const char* src, const char* dst) { m_func8(src, dst); }
+	void Notify_Save(const char* dst) { m_func9(dst); }
+	void Notify_Load(const char* dst) { m_func10(dst); }
 private:
 	VirtualDiskManagerObserver();
 	~VirtualDiskManagerObserver();
@@ -36,6 +42,9 @@ private:
 	Functor1<const char*> m_func5;
 	Functor2<const char*,int> m_func6;
 	Functor2<const char*, int> m_func7;
+	Functor2<const char*, const char*> m_func8; 
+	Functor1<const char*> m_func9;
+	Functor1<const char*> m_func10;
 };
 
 
