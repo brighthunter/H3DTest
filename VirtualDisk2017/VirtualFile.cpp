@@ -67,3 +67,10 @@ void VirtualFile::Combine(VirtualBlock*pchild, int state)
 {
 	return;
 }
+void VirtualFile::Encode(std::ofstream& of)
+{
+}
+void VirtualFile::Decode(std::ifstream& inf)
+{
+
+}

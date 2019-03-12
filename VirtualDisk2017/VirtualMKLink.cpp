@@ -336,3 +336,10 @@ void VirtualMKLink::SetName(const char* oldChildName, const char* newChildName)
 	}
 	return p->SetName(oldChildName,newChildName);
 }
+void VirtualMKLink::Encode(std::ofstream& of)
+{
+}
+void VirtualMKLink::Decode(std::ifstream& inf)
+{
+
+}

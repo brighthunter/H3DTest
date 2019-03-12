@@ -42,6 +42,8 @@ public:
 	virtual void Combine(VirtualBlock*pchild, int state);
 	int GetChildrenSize();
 	void SetName(const char* oldChildName, const char* newChildName);
+	void Encode(std::ofstream& of);
+	void Decode(std::ifstream& inf) ;
 private:
 	VirtualBlock* m_root;
 	std::list<std::string> m_paths;

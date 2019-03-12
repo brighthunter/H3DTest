@@ -654,11 +654,15 @@ void VirtualFolder::Encode(std::ofstream& of)
 {
 	if (!m_broot)
 	{
-		of << m_type << GetParent()->GetName() << m_name;
+		of << m_type << GetParent()->GetName() << m_name << m_datetime << m_daytime;
+	}
+	else
+	{
+		
 	}
 	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
 	{
-		//it->second->Encode(of);
+		it->second->Encode(of);
 		//StringUtil::EncodeString(of,it->first);
 	}
 	/*std::map<std::string, VirtualBlock*>::const_iterator it = m_vfChildren.begin();
