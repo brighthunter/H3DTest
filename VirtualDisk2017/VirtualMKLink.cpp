@@ -13,7 +13,7 @@ std::string VirtualMKLink::GetDir(bool linkCursor)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetDir符号链接不存在\n");
 		return false;
 	}
 	std::string cursor;
@@ -25,7 +25,7 @@ bool VirtualMKLink::CreateVirtualPath(std::list<std::string> subfiles)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("CreateVirtualPath符号链接不存在\n");
 		return false;
 	}
 	return p->CreateVirtualPath(subfiles);
@@ -35,7 +35,7 @@ bool VirtualMKLink::DeleteVirtualPath(std::list<std::string> subfiles, int s)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("DeleteVirtualPath符号链接不存在\n");
 		return false;
 	}
 	return p->DeleteVirtualPath(subfiles,s);
@@ -45,7 +45,7 @@ bool VirtualMKLink::DeleteVirtualPath(std::string fileName , int s)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("DeleteVirtualPath符号链接不存在\n");
 		return false;
 	}
 	return p->DeleteVirtualPath(fileName, s);
@@ -55,7 +55,7 @@ bool VirtualMKLink::DeleteVirtualFile(std::list<std::string> subfiles, int s)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("DeleteVirtualFile符号链接不存在\n");
 		return false;
 	}
 	return p->DeleteVirtualFile(subfiles,s);
@@ -65,7 +65,7 @@ bool VirtualMKLink::DeleteVirtualFile(std::string fileName,int s)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("DeleteVirtualFile符号链接不存在\n");
 		return false;
 	}
 	return p->DeleteVirtualFile(fileName,s);
@@ -75,7 +75,7 @@ bool VirtualMKLink::IsPathEmpty()
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("IsPathEmpty符号链接不存在\n");
 		return false;
 	}
 	return p->IsPathEmpty();
@@ -90,7 +90,7 @@ bool VirtualMKLink::FindPath(std::list<std::string> subfiles)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("FindPath符号链接不存在\n");
 		return false;
 	}
 	return p->FindPath(subfiles);
@@ -100,7 +100,7 @@ bool VirtualMKLink::FindPathFile(std::list<std::string> subfiles)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("FindPathFile符号链接不存在\n");
 		return false;
 	}
 	return p->FindPathFile(subfiles);
@@ -110,7 +110,7 @@ bool VirtualMKLink::CreateVirtualFile(void *mem, int fsize, const char* dstName)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("CreateVirtualFile符号链接不存在\n");
 		return false;
 	}
 	return p->CreateVirtualFile(mem, fsize, dstName);
@@ -123,7 +123,7 @@ bool VirtualMKLink::Init(std::list<std::string> linkPath, VirtualBlock* root)
 	auto p = root->GetVirtualPoint(linkPath);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("Init符号链接不存在\n");
 		return false;
 	}
 	m_isPath = root->GetVirtualPoint(linkPath)->IsPath();
@@ -134,7 +134,7 @@ bool VirtualMKLink::GetAllFile(std::list<std::string>paths, std::list<std::strin
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetAllFile符号链接不存在\n");
 		return false;
 	}
 	return p->GetAllFile(paths, files);
@@ -144,7 +144,7 @@ bool VirtualMKLink::GetAllFile(std::list<std::string>& files)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetAllFile2符号链接不存在\n");
 		return false;
 	}
 	return p->GetAllFile(files);
@@ -154,7 +154,7 @@ bool VirtualMKLink::GetFileMem(std::list<std::string> srcPaths, void** mem, int&
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetFileMem符号链接不存在\n");
 		return false;
 	}
 	return p->GetFileMem(srcPaths, mem, size);
@@ -165,7 +165,7 @@ bool VirtualMKLink::GetFileMem(void** mem, int& size)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetFileMem2符号链接不存在\n");
 		return false;
 	}
 	return p->GetFileMem(mem, size);
@@ -175,7 +175,7 @@ int  VirtualMKLink::VirtualMKLink::GetFileSzie()
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetFileSzie符号链接不存在\n");
 		return false;
 	}
 	return p->GetFileSzie();
@@ -185,7 +185,7 @@ bool VirtualMKLink::RenamePathFile(const char* name, std::list<std::string>subfi
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("RenamePathFile符号链接不存在\n");
 		return false;
 	}
 	return p->RenamePathFile(name, subfiles);
@@ -195,7 +195,7 @@ bool VirtualMKLink::SetCursor(std::list<std::string>subfiles)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("SetCursor符号链接不存在\n");
 		return false;
 	}
 	return p->SetCursor(subfiles);
@@ -207,7 +207,7 @@ bool VirtualMKLink::SetCursor()
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("SetCursor2符号链接不存在\n");
 		return false;
 	}
 	return p->SetCursor();
@@ -219,29 +219,21 @@ bool VirtualMKLink::ClearCursor()
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("ClearCursor符号链接不存在\n");
 		return false;
 	}
 	return p->ClearCursor();
 }
 void VirtualMKLink::PrintPathMessage(bool hasName)
 {
-	auto p = m_root->GetVirtualPoint(m_paths);
-	if (!p)
-	{
-		printf("符号链接不存在\n");
-		return;
-	}
-	printf("%s  %s    <SYMLINKD>     %s [%s]\n", m_datetime, m_daytime, m_name.c_str(),p->GetName().c_str());
-	return p->PrintPathMessage(hasName);
-
+	printf("%s  %s    <SYMLINKD>     %s [%s]\n", m_datetime, m_daytime, m_name.c_str(), m_paths.front().c_str());
 }
 void VirtualMKLink::PrintMessage(std::list<std::string> subfiles, int state)
 {
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("PrintMessage符号链接不存在\n");
 		return;
 	}
 	return p->PrintMessage(subfiles,state);
@@ -256,7 +248,7 @@ VirtualBlock* VirtualMKLink::GetVirtualPoint(std::list<std::string>subfiles)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetVirtualPoint符号链接不存在\n");
 		return nullptr;
 	}
 	subfiles.pop_back();
@@ -268,7 +260,7 @@ bool VirtualMKLink::MkLink(std::list<std::string> src, std::list<std::string> ds
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("MkLink符号链接不存在\n");
 		return false;
 	}
 	return p->MkLink(src,dst,root);
@@ -278,7 +270,7 @@ void VirtualMKLink::Save(std::string dst)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("Save符号链接不存在\n");
 		return;
 	}
 	return p->Save(dst);
@@ -288,7 +280,7 @@ void VirtualMKLink::Clear()
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("Clear符号链接不存在\n");
 		return;
 	}
 	return p->Clear();
@@ -298,7 +290,7 @@ void VirtualMKLink::EraseChild(std::string cname)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("EraseChild符号链接不存在\n");
 		return;
 	}
 	return p->EraseChild(cname);
@@ -308,7 +300,7 @@ void VirtualMKLink::CopyForMove(VirtualBlock* pchild, int state)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("CopyForMove符号链接不存在\n");
 		return;
 	}
 	return p->CopyForMove(pchild, state);
@@ -318,7 +310,7 @@ void VirtualMKLink::Combine(VirtualBlock*pchild, int state)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("Combine符号链接不存在\n");
 		return;
 	}
 	return p->Combine(pchild, state);
@@ -329,7 +321,7 @@ int VirtualMKLink::GetChildrenSize()
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("GetChildrenSize符号链接不存在\n");
 		return 0;
 	}
 	return p->GetChildrenSize();
@@ -339,7 +331,7 @@ void VirtualMKLink::SetName(const char* oldChildName, const char* newChildName)
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
-		printf("符号链接不存在\n");
+		printf("SetName符号链接不存在\n");
 		return ;
 	}
 	return p->SetName(oldChildName,newChildName);

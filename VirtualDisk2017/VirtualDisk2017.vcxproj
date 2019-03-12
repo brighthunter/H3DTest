@@ -130,6 +130,7 @@
     <ClCompile Include="CommondRen.cpp" />
     <ClCompile Include="CommondSave.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="VirtualBlock.cpp" />
     <ClCompile Include="VirtualDiskManager.cpp" />
     <ClCompile Include="VirtualDiskManagerObserver.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="CommondSave.h" />
     <ClInclude Include="PathUtil.h" />
     <ClInclude Include="StringUtil.h" />
+    <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="Tool\functor.h" />
     <ClInclude Include="VirtualBlock.h" />
     <ClInclude Include="VirtualDiskManager.h" />

@@ -16,13 +16,17 @@ void TestTool()
 }
 void Test(VirtualDiskManager *p)
 {
+	p->analyzeCommond("save @e:\\SaveTest\\1");
+	p->analyzeCommond("load @e:\\SaveTest\\1");
+
 	p->analyzeCommond("md Test");
 	p->analyzeCommond("md Test1");
 	p->analyzeCommond("copy @e:\\Test\\t.txt Test");
 	p->analyzeCommond("copy Test\\t.txt Test1");
 	p->analyzeCommond("copy Test1\\t.txt @e:\\Test\\1\\");
-	p->analyzeCommond("save @e:\\SaveTest");
 	p->analyzeCommond("load @e:\\Test");
+	p->analyzeCommond("move test1 MoveTest");
+	p->analyzeCommond("save @e:\\SaveTest");
 	p->analyzeCommond("mklink test aaa");
 	p->analyzeCommond("copy test @e:\\Test\\test\\CopyTest");
 	/*MEMORYSTATUSEX sysMemStatus;
@@ -55,7 +59,7 @@ int main()
 		if (!strcmp(str, "exit"))
 			break;
 		if (!p->analyzeCommond(str))
-			printf("Failed\n");
+			printf("语法命令不正确\n");
 		getchar();
 		ZeroMemory(str,512);
 

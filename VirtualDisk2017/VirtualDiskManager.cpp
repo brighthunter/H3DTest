@@ -3,6 +3,7 @@
 #include "PathUtil.h"
 #include "VirtualDiskManagerObserver.h"
 #include <Shlwapi.h>
+#include "tinyxml2/tinyxml2.h"
 #pragma comment(lib,"shlwapi.lib")
 VirtualDiskManager::VirtualDiskManager(void)
 {
@@ -516,13 +517,21 @@ void VirtualDiskManager::Save(const char* dst)
 	}
 	std::string realdst = dst;
 	realdst.erase(0, 1);
+	{
+		//Test
+		m_root->Serialize(realdst.c_str());
+		return;
+		//Test
+	}
 	if (!PathFileExists(realdst.c_str()))
 	{
 		printf("序列化磁盘路径不存在\n");
 		return;
-	}
+	} 
+	
 	std::string fullPathdst;
 	getFullPath(fullPathdst, realdst.c_str());
+	
 	std::list<std::string> dstPaths;
 	PathUtil::SeperateFile(fullPathdst, dstPaths);
 	m_root->Save(realdst.c_str());
@@ -537,6 +546,12 @@ void VirtualDiskManager::Load(const char* src)
 	}
 	std::string realsrc = src;
 	realsrc.erase(0, 1);
+	{
+		//Test
+		m_root->DeSerialize(realsrc.c_str());
+		return;
+		//Test
+	}
 	if (!PathFileExists(realsrc.c_str()))
 	{
 		printf("真实磁盘路径不存在\n");
@@ -591,4 +606,9 @@ void VirtualDiskManager::Move(const char* src, const char* dst,int state)
 	std::list<std::string> dstfiles;
 	PathUtil::SeperateFile(fullPathdst, dstfiles);
 	m_root->Move(srcfiles, dstfiles, state);
+}
+
+void VirtualDiskManager::Serialize(const char* dst)
+{
+	m_root->Serialize(dst);
 }

@@ -5,6 +5,9 @@
 #include <Windows.h>
 #include "StringUtil.h"
 #include "PathUtil.h"
+#include "tinyxml2/tinyxml2.h"
+#include <fstream>
+#define VIRTUALDISK_HEAD "@VritualDisk"
 VirtualFolder::VirtualFolder(void)
 {
 }
@@ -425,7 +428,7 @@ void VirtualFolder::PrintMessage(std::list<std::string> subfiles,int state)
 	std::string printPath;
 	for (auto it = subfiles.begin(); it != subfiles.end(); it++)
 	{
-		printPath += *it + "\\" ;
+		printPath =  *it + "\\" + printPath;
 	}
 	printf("\nv:\\%sµÄÄ¿Â¼\n\n", printPath.c_str());
 	if (!IsRoot())
@@ -636,4 +639,64 @@ void VirtualFolder::GetChildren(std::list<VirtualBlock*> &pchildren)
 	{
 		pchildren.push_back(it->second);
 	}
+}
+void VirtualFolder::Serialize(const char* dst)
+{
+	std::ofstream dstfile(dst);
+	dstfile << VIRTUALDISK_HEAD;
+	char head[128];
+	dstfile << head;
+	//dstfile.open(dst, std::ios::binary | std::ios::in, 0);
+	Encode(dstfile);
+	dstfile.close();
+}
+void VirtualFolder::Encode(std::ofstream& of)
+{
+	if (!m_broot)
+	{
+		of << m_type << GetParent()->GetName() << m_name;
+	}
+	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
+	{
+		//it->second->Encode(of);
+		//StringUtil::EncodeString(of,it->first);
+	}
+	/*std::map<std::string, VirtualBlock*>::const_iterator it = m_vfChildren.begin();
+	for (; it != m_vfChildren.end(); ++it)
+	{
+		of << it->first << it->second->type << it->second->Encode(of);
+	}*/
+
+
+}
+void VirtualFolder::DeSerialize(const char* src)
+{
+	std::ifstream srcfile(src);
+	//char head[12];
+	std::string headName;
+	srcfile >> headName;
+	if (headName != VIRTUALDISK_HEAD)
+	{
+		return;
+	}
+	char head[128];
+	srcfile >> head;
+	Decode(srcfile);
+	srcfile.close();
+}
+void VirtualFolder::Decode(std::ifstream& inf)
+{
+	/*{
+		std::string file_name;
+		int file_type = 0;
+		inf >> file_name >> file_type;
+
+		switch (file_type)
+		{
+		case NORMAL_FILE:
+			new
+		default:
+			break;
+		}	*/
+
 }

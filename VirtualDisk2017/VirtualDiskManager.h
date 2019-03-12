@@ -38,6 +38,7 @@ public:
 	void Save(const char* dst);
 	void Load(const char* src);
 	void Move(const char* src, const char* dst,int state);
+	void Serialize(const char* dst);
 private:
 	VirtualFolder * m_root;
 	CommondManager* m_pCommondmanager;

@@ -3,6 +3,12 @@
 #include <string>
 #include <map>
 #include <list>
+enum BlockType
+{
+	FLOLDER_BLOCK,
+	FILE_BLOCK,
+	MKLINK_BLOCK
+};
 class VirtualBlock
 {
 public:
@@ -51,6 +57,7 @@ protected:
 	std::string m_name;
 	bool m_bpredel;
 	VirtualBlock* m_pParent = nullptr;
+	BlockType m_type;
 private:
 	virtual bool SetTimeNow();
 };
