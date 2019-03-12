@@ -1,6 +1,7 @@
 #include <cstdio>
 #include "VirtualDiskManager.h"
 #include "PathUtil.h"
+#include <Windows.h>
 void TestTool()
 {
 	auto test = PathUtil::GetFileName("E:/ÐéÄâ´ÅÅÌÏîÄ¿/test/ttt/../test2");
@@ -23,7 +24,7 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("save @e:\\SaveTest");
 	p->analyzeCommond("load @e:\\Test");
 	p->analyzeCommond("mklink test aaa");
-	
+	p->analyzeCommond("copy test @e:\\Test\\test\\CopyTest");
 	/*MEMORYSTATUSEX sysMemStatus;
 	sysMemStatus.dwLength = sizeof(sysMemStatus);
 	if (!GlobalMemoryStatusEx(&sysMemStatus))
@@ -51,9 +52,12 @@ int main()
 	{
 		p->PrintCursor();
 		scanf_s("%[^\n]",str,512);
+		if (!strcmp(str, "exit"))
+			break;
 		if (!p->analyzeCommond(str))
 			printf("Failed\n");
 		getchar();
+		ZeroMemory(str,512);
 
 	}
 	delete p;

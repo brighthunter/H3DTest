@@ -6,18 +6,18 @@ class VirtualMKLink :public VirtualBlock
 public:
 	VirtualMKLink();
 	~VirtualMKLink();
-	virtual std::string GetDir();
-	virtual bool createPath(std::list<std::string> subfiles);
-	virtual bool deletePath(std::list<std::string> subfiles, int s = 0);
+	virtual std::string GetDir(bool linkCursor = false);
+	virtual bool CreateVirtualPath(std::list<std::string> subfiles);
+	virtual bool DeleteVirtualPath(std::list<std::string> subfiles, int s = 0);
+	virtual bool DeleteVirtualPath(std::string fileName = "", int s = 0);
 	virtual bool DeleteVirtualFile(std::list<std::string> subfiles, int s = 0);
-	virtual bool DeleteVirtualFile(int s);
+	virtual bool DeleteVirtualFile(std::string fileName = "",int s = 0);
 	virtual bool IsPathEmpty();
 	virtual bool IsPath() { return m_isPath; };
 	virtual bool IsRoot();
 	virtual bool FindPath(std::list<std::string> subfiles);
 	virtual bool FindPathFile(std::list<std::string> subfiles);
 	virtual bool CreateVirtualFile(void *mem, int fsize, const char* dstName);
-	virtual bool Init();
 	bool Init(std::list<std::string> linkPath, VirtualBlock* root);
 	virtual void SetRoot(VirtualBlock* root) { m_root = root; }
 	virtual void SetLinkPath(VirtualBlock* root) { m_root = root; }
@@ -41,10 +41,12 @@ public:
 	virtual void ClearMap(){ return; }
 	virtual void Combine(VirtualBlock*pchild, int state);
 	int GetChildrenSize();
+	void SetName(const char* oldChildName, const char* newChildName);
 private:
 	VirtualBlock* m_root;
 	std::list<std::string> m_paths;
 	bool m_isPath;
+	bool m_bCursor = false;
 };
 
 

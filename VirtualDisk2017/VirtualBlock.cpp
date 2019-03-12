@@ -6,6 +6,7 @@ VirtualBlock::VirtualBlock()
 
 VirtualBlock::~VirtualBlock()
 {
+	m_pParent = nullptr;
 }
 bool VirtualBlock::SetTimeNow()
 {
@@ -17,7 +18,8 @@ bool VirtualBlock::SetTimeNow()
 	sprintf_s(m_daytime, "%02d:%02d", local.tm_hour, local.tm_min);
 	return true;
 }
-bool VirtualBlock::Init()
+bool VirtualBlock::Init(VirtualBlock* pParent)
 {
+	m_pParent = pParent;
 	return SetTimeNow();
 }

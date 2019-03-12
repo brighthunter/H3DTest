@@ -6,12 +6,12 @@ class VirtualFile :public VirtualBlock
 public:
 	VirtualFile();
 	~VirtualFile();
-	virtual std::string GetDir() { return ""; }
-	virtual bool createPath(std::list<std::string> subfiles) { return false; }
-	virtual bool deletePath(std::list<std::string> subfiles, int s = 0) { return false; }
+	virtual std::string GetDir(bool linkCursor = false) { return ""; }
+	virtual bool CreateVirtualPath(std::list<std::string> subfiles) { return false; }
+	virtual bool DeleteVirtualPath(std::list<std::string> subfiles, int s = 0) { return false; }
+	virtual bool DeleteVirtualPath(std::string fileName = "", int s = 0) { return false; }
 	virtual bool DeleteVirtualFile(std::list<std::string> subfiles, int s = 0) { return false; }
-	virtual bool DeleteVirtualFile(int s) { return false; }
-	virtual bool Init() { return __super::Init(); }
+	virtual bool DeleteVirtualFile(std::string fileName = "",int s = 0) { return false; }
 	virtual bool SetMemory(void* mem, int memSize);
 	virtual bool IsPathEmpty() { return false; }
 	virtual bool IsPath() { return false; }
@@ -40,6 +40,7 @@ public:
 	virtual void CopyForMove(VirtualBlock*, int state) { return; }
 	virtual void Combine(VirtualBlock*pchild, int state);
 	virtual int GetChildrenSize() { return 0; }
+	virtual void SetName(const char* oldChildName, const char* newChildName) { return; }
 private:
 	void* m_mem = nullptr;
 	int m_size = 0;

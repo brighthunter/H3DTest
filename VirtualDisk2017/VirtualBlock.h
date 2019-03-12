@@ -8,24 +8,26 @@ class VirtualBlock
 public:
 	VirtualBlock();
 	virtual ~VirtualBlock() = 0;
-	virtual std::string GetDir() = 0;
-	virtual bool createPath(std::list<std::string> subfiles) = 0;
-	virtual bool deletePath(std::list<std::string> subfiles, int s = 0) = 0;
+	virtual std::string GetDir(bool linkCursor = false) = 0;
+	virtual bool CreateVirtualPath(std::list<std::string> subfiles) = 0;
+	virtual bool DeleteVirtualPath(std::list<std::string> subfiles, int s = 0) = 0;
+	virtual bool DeleteVirtualPath(std::string fileName = "", int s = 0) = 0;
 	virtual bool DeleteVirtualFile(std::list<std::string> subfiles, int s = 0) = 0;
-	virtual bool DeleteVirtualFile(int s) = 0;
+	virtual bool DeleteVirtualFile(std::string fileName ="",int s = 0) = 0;
 	virtual bool IsPathEmpty() = 0;
 	virtual bool IsPath() = 0;
 	virtual bool IsRoot() = 0;
 	virtual bool FindPath(std::list<std::string> subfiles) = 0;
 	virtual bool FindPathFile(std::list<std::string> subfiles) = 0;
 	virtual bool CreateVirtualFile(void *mem, int fsize, const char* dstName) = 0;
-	virtual bool Init();
+	virtual bool Init(VirtualBlock* pfather);
 	virtual bool GetAllFile(std::list<std::string>paths, std::list<std::string>& files) = 0;
 	virtual bool GetAllFile(std::list<std::string>& files) = 0;
 	virtual bool GetFileMem(std::list<std::string> srcPaths, void** mem, int& size) = 0;
 	virtual bool GetFileMem(void** mem, int& size) = 0;
 	virtual int  GetFileSzie() = 0;
 	virtual void SetName(const char* name) { m_name = name; }
+	virtual void SetName(const char* oldChildName, const char* newChildName) = 0;
 	virtual std::string GetName() { return m_name; }
 	virtual bool RenamePathFile(const char* name, std::list<std::string>subfiles) = 0;
 	virtual bool SetCursor(std::list<std::string>subfiles) = 0;
@@ -42,11 +44,13 @@ public:
 	virtual void CopyForMove(VirtualBlock*, int state) = 0;
 	virtual void Combine(VirtualBlock*pchild, int state) = 0;
 	virtual int GetChildrenSize() = 0;
+	virtual VirtualBlock* GetParent() { return m_pParent; }
 protected:
 	char m_datetime[32];
 	char m_daytime[32];
 	std::string m_name;
 	bool m_bpredel;
+	VirtualBlock* m_pParent = nullptr;
 private:
 	virtual bool SetTimeNow();
 };

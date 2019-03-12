@@ -18,24 +18,31 @@ VirtualFolder::~VirtualFolder(void)
 	}
 	m_vfChildren.clear();
 }
-std::string VirtualFolder::GetDir()
+std::string VirtualFolder::GetDir(bool linkCursor)
 {
 	std::string cursor;
 	if (m_bCursor)
 	{
 		for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
 		{
-			cursor +=  it->second->GetDir();
+			cursor += it->second->GetDir();
 		}
 		cursor = m_name + '\\' + cursor;
+		return cursor;
+	}
+	else if (linkCursor)
+	{
+		for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
+		{
+			cursor += it->second->GetDir();
+		}
 		return cursor;
 	}
 	else
 		return "";
 }
-bool VirtualFolder::createPath(std::list<std::string> subfiles)
+bool VirtualFolder::CreateVirtualPath(std::list<std::string> subfiles)
 {
-	//new 
 	if (subfiles.size() == 0)
 	{
 		printf("路径为空\n");
@@ -52,12 +59,12 @@ bool VirtualFolder::createPath(std::list<std::string> subfiles)
 				printf("路径已存在\n");
 				return false;
 			}
-			m_vfChildren[tmp]->createPath(subfiles);
+			m_vfChildren[tmp]->CreateVirtualPath(subfiles);
 		}
 		else
 		{
 			m_vfChildren[tmp] = new VirtualFolder();
-			m_vfChildren[tmp]->Init();
+			m_vfChildren[tmp]->Init(this);
 			m_vfChildren[tmp]->SetName(tmp.c_str());
 		}
 		return true;
@@ -68,148 +75,92 @@ bool VirtualFolder::createPath(std::list<std::string> subfiles)
 	}
 	
 	return true;
-	//old
-	/*auto tmp = subfiles.back();
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{		
-		subfiles.pop_back();
-		m_vfChildren[tmp]->createPath(subfiles);
-	}
-	else
-	{
-		subfiles.pop_back();
-		if (m_vfChildren.find(tmp) != m_vfChildren.end())
-			return false;
-		m_vfChildren[tmp] = new VirtualFolder();
-		m_vfChildren[tmp]->Init();
-		m_vfChildren[tmp]->SetName(tmp.c_str());
-	}*/
-	return true;
 }
-bool VirtualFolder::deletePath(std::list<std::string> subfiles, int s)
+bool VirtualFolder::DeleteVirtualPath(std::list<std::string> subfiles, int s)
 {
-	//new
-	if (subfiles.size() == 0)
-	{
-		printf("待删除路径为空\n");
-		return false;
-	}
 	if (m_name == subfiles.back())
 	{
-		subfiles.pop_back();
-		if (subfiles.size() > 1)
-		{
-			auto tmp = subfiles.back();
-			if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-			{
-				m_vfChildren[tmp]->deletePath(subfiles,s);
-				
-			}
-			return true;
-		}
-		else if (subfiles.size() == 1)
-		{			
-			auto tmp = subfiles.back();
-			if (m_vfChildren[tmp]->IsPathEmpty())
-				delete m_vfChildren[tmp];
-			else if (s & 1)
-			{
-				subfiles.push_back(tmp);
-				m_vfChildren[tmp]->deletePath(subfiles, s);
-			}
-			return true;
-		}
-		else if (subfiles.size() == 0)
-		{
-			printf("无法删除盘符路径\n");
-			return false;
-		}
-	}
-	//old
-	/*auto tmp = subfiles.back();	
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{
-		subfiles.pop_back();
-		m_vfChildren[tmp]->deletePath(subfiles);
-		if (!subfiles.size())
-		{
-			if(m_vfChildren[tmp]->IsPathEmpty())
-				delete m_vfChildren[tmp];
-			else if (s & 1)
-			{
-				subfiles.push_back(tmp);
-				m_vfChildren[tmp]->deletePath(subfiles,s);
-			}
-		}
-	}
-	*/
-	return true;
-}
-bool VirtualFolder::DeleteVirtualFile(std::list<std::string> subfiles,int s)
-{	//new
-	if (m_name == subfiles.back())
-	{
+		auto tmpfile = subfiles.front();
+		subfiles.pop_front();
 		auto p = GetVirtualPoint(subfiles);
 		if (!p)
 		{
 			printf("删除路径不存在\n");
 			return false;
 		}
-		if(p->IsPathEmpty())
-			p->DeleteVirtualFile(s);
-		else
-		{
-			printf("删除路径非法");
-			return false;
-		}
+		p->DeleteVirtualPath(tmpfile, s);
 	}
-	return true;
-	//old
-	/*auto tmp = subfiles.back();
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{
-		subfiles.pop_back();
-		m_vfChildren[tmp]->DeleteVirtualFile(subfiles, s);
-		if (!subfiles.size())
-		{
-			if (!m_vfChildren[tmp]->IsPathEmpty())
-			{
-				m_vfChildren[tmp]->DeleteVirtualFile(s);
-			}
-		}
-	}
-	else
-	{
-		printf("%s找不到\n", subfiles.back().c_str());
-		return false;
-	}
-*/
 	return true;
 }
-bool VirtualFolder::DeleteVirtualFile(int s)
+bool VirtualFolder::DeleteVirtualPath(std::string pathname, int s)
 {
+	std::list<std::string> allchidren;
 	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
 	{
-		if (!it->second->IsPath())
+		allchidren.push_back(it->first);
+		if (s & 0x1)
 		{
-			delete it->second;
-			it = m_vfChildren.erase(it);
+			if (it->second->IsPath() && !it->second->IsPathEmpty())
+				it->second->DeleteVirtualPath(pathname, s);
+		}
+	}
+	PathUtil::FindWildcard(allchidren, pathname);
+	for (auto it = allchidren.begin(); it != allchidren.end(); it++)
+	{
+		if (m_vfChildren[*it]->IsPathEmpty())
+		{
+			delete m_vfChildren[*it];
+			m_vfChildren.erase(*it);
 		}
 		else
 		{
-			if (s & 1)
-			{
-				it->second->DeleteVirtualFile(s);
-			}
+			continue;
 		}
 	}
 	return true;
 }
-bool VirtualFolder::Init()
-{
-	__super::Init();
+bool VirtualFolder::DeleteVirtualFile(std::list<std::string> subfiles,int s)
+{	
+	if (m_name == subfiles.back())
+	{
+		auto tmpfile = subfiles.front();
+		subfiles.pop_front();
+		auto p = GetVirtualPoint(subfiles);
+		if (!p)
+		{
+			printf("删除路径不存在\n");
+			return false;
+		}
+		p->DeleteVirtualFile(tmpfile,s);
+	}
 	return true;
 }
+bool VirtualFolder::DeleteVirtualFile(std::string fileName, int s)
+{
+	std::list<std::string> allchidren;
+	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
+	{
+		allchidren.push_back(it->first);
+		if (s & 0x1)
+		{
+			if (it->second->IsPath() && !it->second->IsPathEmpty())
+				it->second->DeleteVirtualFile(fileName, s);
+		}
+	}
+	PathUtil::FindWildcard(allchidren, fileName);
+	for (auto it = allchidren.begin(); it != allchidren.end(); it++)
+	{
+		if (!m_vfChildren[*it]->IsPath())
+		{
+			delete m_vfChildren[*it];
+			m_vfChildren.erase(*it);
+		}
+		else
+			continue;
+	}
+	return true;
+}
+
 
 bool VirtualFolder::IsPathEmpty()
 {
@@ -230,7 +181,6 @@ bool VirtualFolder::IsRoot()
 }
 bool VirtualFolder::FindPath(std::list<std::string> subfiles)
 {
-	//new
 	auto p = GetVirtualPoint(subfiles);
 	if (!p)
 	{
@@ -241,27 +191,9 @@ bool VirtualFolder::FindPath(std::list<std::string> subfiles)
 		return true;
 	else
 		return false;
-	//old
-	/*bool res = true;
-	if (subfiles.size() == 0)
-		return true;
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{
-		auto tmp = subfiles.back();
-		subfiles.pop_back();
-		if (!m_vfChildren[tmp]->IsPath())
-			return false;
-		if (subfiles.size() == 0)
-			return true;
-		res &= m_vfChildren[tmp]->FindPath(subfiles);
-		return res;
-	}
-	else
-		return false;*/
 }
 bool VirtualFolder::FindFile(std::list<std::string> subfiles)
 {
-	//new
 	auto p = GetVirtualPoint(subfiles);
 	if (!p)
 	{
@@ -274,25 +206,7 @@ bool VirtualFolder::FindFile(std::list<std::string> subfiles)
 	{
 		return false;
 	}
-	//old
-	/*bool res = true;
-	if (subfiles.empty() == 0)
-		return true;
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{
-		auto tmp = subfiles.back();
-		subfiles.pop_back();		
-		if (subfiles.size() == 0)
-		{
-			if (m_vfChildren[tmp]->IsPath())
-				return false;
-			return true;
-		}
-		res &= m_vfChildren[tmp]->FindPath(subfiles);
-		return res;
-	}
-	else
-		return false;*/
+
 }
 bool VirtualFolder::FindPathFile(std::list<std::string> subfiles)
 {
@@ -315,7 +229,6 @@ bool VirtualFolder::FindPathFile(std::list<std::string> subfiles)
 }
 bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, std::list<std::string> subfiles, const char* dstName)
 {
-	//new
 	auto p = GetVirtualPoint(subfiles);
 	if (!p)
 	{
@@ -335,22 +248,6 @@ bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, std::list<std::strin
 		printf("路径非法\n");
 		return false;
 	}
-	//old
-	/*bool res = true;
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{
-		auto tmp = subfiles.back();
-		subfiles.pop_back();
-		if (subfiles.size() == 0)
-		{
-			res &= m_vfChildren[tmp]->CreateVirtualFile(mem, fsize, dstName);
-			return res;
-		}
-		res &= m_vfChildren[tmp]->FindPath(subfiles);
-		return res;
-	}
-	else
-		return false;*/
 }
 bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, const char* dstName)
 {
@@ -358,13 +255,13 @@ bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, const char* dstName)
 		return false;
 	auto vf = new VirtualFile();
 	vf->SetMemory(mem,fsize);
-	vf->SetName(dstName);
 	m_vfChildren[dstName] = vf;
+	m_vfChildren[dstName]->SetName(dstName);
+	m_vfChildren[dstName]->Init(this);
 	return true;
 }
 bool VirtualFolder::GetAllFile(std::list<std::string>paths, std::list<std::string>& files)
 {
-	//new 
 	auto p = GetVirtualPoint(paths);
 	if (!p)
 	{
@@ -375,26 +272,6 @@ bool VirtualFolder::GetAllFile(std::list<std::string>paths, std::list<std::strin
 	{
 		return p->GetAllFile(files);
 	}
-	//old
-	/*if (!FindPath(paths))
-		return false;
-	if (m_vfChildren.find(paths.back()) != m_vfChildren.end())
-	{
-		auto tmp = paths.back();
-		paths.pop_back();
-		if (paths.size() == 0)
-		{
-			return m_vfChildren[tmp]->GetAllFile(files);
-		}
-		if (m_vfChildren[tmp]->IsPath())
-		{
-			return m_vfChildren[tmp]->GetAllFile(paths, files);
-		}
-		else
-			return false;
-	}
-	else
-		return false;*/
 }
 bool VirtualFolder::GetAllFile(std::list<std::string>& files)
 {
@@ -409,7 +286,6 @@ bool VirtualFolder::GetAllFile(std::list<std::string>& files)
 }
 bool VirtualFolder::GetFileMem(std::list<std::string> srcPaths,void** mem,int &size)
 {
-	//new
 	auto p = GetVirtualPoint(srcPaths);
 	if (!p)
 	{
@@ -418,26 +294,6 @@ bool VirtualFolder::GetFileMem(std::list<std::string> srcPaths,void** mem,int &s
 	}
 	p->GetFileMem(mem, size);
 	return true;
-	//old
-	/*if (!FindFile(srcPaths))
-		return false;
-	if (m_vfChildren.find(srcPaths.back()) != m_vfChildren.end())
-	{
-		auto tmp = srcPaths.back();
-		srcPaths.pop_back();
-		if (srcPaths.size() == 0)
-		{
-			return m_vfChildren[tmp]->GetFileMem(mem, size);
-		}
-		if (m_vfChildren[tmp]->IsPath())
-		{
-			return m_vfChildren[tmp]->GetFileMem(srcPaths, mem, size);
-		}
-		else
-			return false;
-	}
-	else
-		return false;*/
 }
 bool VirtualFolder::RenamePathFile(const char* name, std::list<std::string>subfiles)
 {
@@ -449,30 +305,27 @@ bool VirtualFolder::RenamePathFile(const char* name, std::list<std::string>subfi
 	}
 	else
 	{
+		p->GetParent()->SetName(subfiles.front().c_str(), name);
 		p->SetName(name);
 		return true;
 	}
-	//old
-/*
-	if (!FindPathFile(subfiles))
-		return false;
-	if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
+}
+void VirtualFolder::SetName(const char* oldChildName, const char* newChildName)
+{
+	if (m_vfChildren.find(oldChildName) != m_vfChildren.end())
 	{
-		auto tmp = subfiles.back();
-		subfiles.pop_back();
-		if (subfiles.size() == 0)
+		if (m_vfChildren.find(newChildName) != m_vfChildren.end())
 		{
-			m_vfChildren[tmp]->SetName(name);
-		}
-		if (m_vfChildren[tmp]->IsPath())
-		{
-			return m_vfChildren[tmp]->RenamePathFile(name, subfiles);
+			printf("重命名名字%s已存在\n",newChildName);
+			return;
 		}
 		else
-			return false;
+		{
+			m_vfChildren[newChildName] = m_vfChildren[oldChildName];
+			m_vfChildren[newChildName]->SetName(newChildName);
+			m_vfChildren.erase(oldChildName);
+		}
 	}
-	else
-		return false;*/
 }
 bool VirtualFolder::SetCursor(std::list<std::string>subfiles)
 {
@@ -480,7 +333,6 @@ bool VirtualFolder::SetCursor(std::list<std::string>subfiles)
 		return false;
 	else
 		ClearCursor();
-	//new
 	VirtualBlock *p = this;
 	std::list<std::string> tmpfiles;
 	tmpfiles.push_front(subfiles.back());
@@ -494,25 +346,6 @@ bool VirtualFolder::SetCursor(std::list<std::string>subfiles)
 		tmpfiles.pop_back();
 	}
 	return true;
-	//old
-	/*if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	{
-		auto tmp = subfiles.back();
-		subfiles.pop_back();
-		if (subfiles.size() == 0)
-		{
-			m_vfChildren[tmp]->SetCursor();
-		}
-		if (m_vfChildren[tmp]->IsPath())
-		{
-			m_bCursor = true;
-			return m_vfChildren[tmp]->SetCursor(subfiles);
-		}
-		else
-			return false;
-	}
-	else
-		return false;*/
 }
 bool VirtualFolder::SetCursor()
 {
@@ -547,25 +380,6 @@ bool VirtualFolder::PrintDir(std::list<std::string>subfiles, int state)
 	{
 		p->PrintMessage(subfiles);
 	}
-
-	//if (!FindPath(subfiles))
-	//	return false;
-	//
-	//if (m_vfChildren.find(subfiles.back()) != m_vfChildren.end())
-	//{
-	//	auto tmp = subfiles.back();
-	//	subfiles.pop_back();
-	//	if (subfiles.size() == 0)
-	//	{
-	//		//m_vfChildren[tmp]->PrintDir(bgSubsize);
-	//	}
-	//	if (m_vfChildren[tmp]->IsPath())
-	//	{
-	//		//return m_vfChildren[tmp]->PrintDir(subfiles, bgSubsize);
-	//	}
-	//	else
-	//		return false;
-	//}
 	return false;
 	
 }
@@ -582,7 +396,9 @@ VirtualBlock* VirtualFolder::GetVirtualPoint(std::list<std::string>subfiles)
 			return m_vfChildren[subfiles.back()]->GetVirtualPoint(subfiles);
 		}
 		else
+		{
 			return nullptr;
+		}
 	}
 	else
 	{
@@ -611,8 +427,7 @@ void VirtualFolder::PrintMessage(std::list<std::string> subfiles,int state)
 	{
 		printPath += *it + "\\" ;
 	}
-	printPath += m_name;
-	printf("\n%s的目录\n\n", printPath.c_str());
+	printf("\nv:\\%s的目录\n\n", printPath.c_str());
 	if (!IsRoot())
 	{
 		PrintPathMessage(false);
@@ -683,8 +498,9 @@ bool VirtualFolder::MkLink(std::list<std::string> src, std::list<std::string> ds
 		{
 			auto link = new VirtualMKLink();
 			link->Init(src, root);
-			link->SetName(tmp.c_str());
 			m_vfChildren[tmp] = link;
+			m_vfChildren[tmp]->SetName(tmp.c_str());
+			m_vfChildren[tmp]->Init(this);
 		}
 		return true;
 	}
@@ -742,11 +558,15 @@ void VirtualFolder::Move(std::list<std::string> src,std::list<std::string> dst, 
 		return;
 	}
 	src.pop_front();
-	auto psrcfather = GetVirtualPoint(src);
+	auto psrcparent = psrc->GetParent();
+	if (!psrcparent)
+	{
+		printf("不能移动磁盘根目录\n");
+	}
 	pdst->CopyForMove(psrc, state);
 	if (!psrc->GetChildrenSize())
 	{
-		psrcfather->EraseChild(psrc->GetName());	
+		psrcparent->EraseChild(psrc->GetName());
 	}
 }
 void VirtualFolder::EraseChild(std::string cname)

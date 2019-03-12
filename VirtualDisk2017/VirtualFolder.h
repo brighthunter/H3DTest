@@ -7,12 +7,12 @@ class VirtualFolder :public VirtualBlock
 public:
 	VirtualFolder(void);
 	~VirtualFolder(void);
-	virtual std::string GetDir();
-	virtual bool createPath(std::list<std::string> subfiles);
-	virtual bool deletePath(std::list<std::string> subfiles,int s = 0);
+	virtual std::string GetDir(bool linkCursor = false);
+	virtual bool CreateVirtualPath(std::list<std::string> subfiles);
+	virtual bool DeleteVirtualPath(std::list<std::string> subfiles,int s = 0);
+	virtual bool DeleteVirtualPath(std::string subfiles, int s);
 	virtual bool DeleteVirtualFile(std::list<std::string> subfiles,int s = 0);
-	virtual bool DeleteVirtualFile(int s);
-	virtual bool Init();
+	virtual bool DeleteVirtualFile(std::string fileName = "",int s = 0);
 	virtual bool IsPathEmpty();
 	virtual bool IsPath();
 	virtual bool IsRoot();
@@ -27,6 +27,8 @@ public:
 	virtual bool GetFileMem(void** mem, int& size) { return false; }
 	virtual int  GetFileSzie() { return 0; }
 	virtual bool RenamePathFile(const char* name, std::list<std::string>subfiles);
+	virtual void SetName(const char* name) { __super::SetName(name); }
+	virtual void SetName(const char* oldChildName, const char* newChildName);
 	virtual bool SetCursor(std::list<std::string> subfiles);
 	virtual bool SetCursor();
 	virtual bool ClearCursor();
@@ -46,6 +48,7 @@ public:
 	void Move(std::list<std::string> src, std::list<std::string> dst,int state);
 	void EraseChild(std::string);
 	void CopyForMove(VirtualBlock*,int state);
+
 private:
 	std::map<std::string, VirtualBlock*> m_vfChildren;
 	bool m_bCursor = false;

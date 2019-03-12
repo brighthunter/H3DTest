@@ -19,8 +19,8 @@ public:
 	void ClearCursor();
 	void PrintDir(const char* userInput,int state);
 	bool analyzeCommond(const char* userInput);
-	bool createPath(const char* userInput);
-	bool deletePath(const char* userInput,bool s = false);
+	bool CreateVirtualPath(const char* userInput);
+	bool DeleteVirtualPath(const char* userInput,bool s = false);
 	bool copyPath(std::string src, std::string dst);
 	bool CopyPath(std::string src, std::string dst);
 	bool getFullPath(std::string &fullpath, const char* userInput);

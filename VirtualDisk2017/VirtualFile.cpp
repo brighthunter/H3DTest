@@ -44,7 +44,7 @@ void VirtualFile::PrintMessage(std::list<std::string> subfiles, int state)
 {
 	auto strMemsize = std::to_string(m_size);
 	StringUtil::AddDot(strMemsize);
-	printf("%s  %s              %19s %s\n", m_datetime, m_daytime, strMemsize.c_str(), m_name.c_str());
+	printf("%s  %s%18s %s\n", m_datetime, m_daytime, strMemsize.c_str(), m_name.c_str());
 }
 void VirtualFile::Save(std::string dst)
 {

@@ -6,17 +6,21 @@ VirtualMKLink::VirtualMKLink()
 VirtualMKLink::~VirtualMKLink()
 {
 }
-std::string VirtualMKLink::GetDir()
+std::string VirtualMKLink::GetDir(bool linkCursor)
 {
+	if (!m_bCursor || !m_isPath)
+		return "";
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
 		printf("符号链接不存在\n");
 		return false;
 	}
-	return p->GetDir();
+	std::string cursor;
+	cursor = m_name + '\\' + p->GetDir(true);
+	return cursor;
 }
-bool VirtualMKLink::createPath(std::list<std::string> subfiles)
+bool VirtualMKLink::CreateVirtualPath(std::list<std::string> subfiles)
 {
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
@@ -24,10 +28,9 @@ bool VirtualMKLink::createPath(std::list<std::string> subfiles)
 		printf("符号链接不存在\n");
 		return false;
 	}
-	p->createPath(subfiles);
-	return true;
+	return p->CreateVirtualPath(subfiles);
 }
-bool VirtualMKLink::deletePath(std::list<std::string> subfiles, int s)
+bool VirtualMKLink::DeleteVirtualPath(std::list<std::string> subfiles, int s)
 {
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
@@ -35,8 +38,17 @@ bool VirtualMKLink::deletePath(std::list<std::string> subfiles, int s)
 		printf("符号链接不存在\n");
 		return false;
 	}
-	p->deletePath(subfiles,s);
-	return true;
+	return p->DeleteVirtualPath(subfiles,s);
+}
+bool VirtualMKLink::DeleteVirtualPath(std::string fileName , int s)
+{
+	auto p = m_root->GetVirtualPoint(m_paths);
+	if (!p)
+	{
+		printf("符号链接不存在\n");
+		return false;
+	}
+	return p->DeleteVirtualPath(fileName, s);
 }
 bool VirtualMKLink::DeleteVirtualFile(std::list<std::string> subfiles, int s)
 {
@@ -46,10 +58,9 @@ bool VirtualMKLink::DeleteVirtualFile(std::list<std::string> subfiles, int s)
 		printf("符号链接不存在\n");
 		return false;
 	}
-	p->DeleteVirtualFile(subfiles,s);
-	return true;
+	return p->DeleteVirtualFile(subfiles,s);
 }
-bool VirtualMKLink::DeleteVirtualFile(int s)
+bool VirtualMKLink::DeleteVirtualFile(std::string fileName,int s)
 {
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
@@ -57,8 +68,7 @@ bool VirtualMKLink::DeleteVirtualFile(int s)
 		printf("符号链接不存在\n");
 		return false;
 	}
-	p->DeleteVirtualFile(s);
-	return true;
+	return p->DeleteVirtualFile(fileName,s);
 }
 bool VirtualMKLink::IsPathEmpty()
 {
@@ -105,10 +115,7 @@ bool VirtualMKLink::CreateVirtualFile(void *mem, int fsize, const char* dstName)
 	}
 	return p->CreateVirtualFile(mem, fsize, dstName);
 }
-bool VirtualMKLink::Init()
-{
-	return true;
-}
+
 bool VirtualMKLink::Init(std::list<std::string> linkPath, VirtualBlock* root)
 {
 	m_paths = linkPath;
@@ -119,7 +126,6 @@ bool VirtualMKLink::Init(std::list<std::string> linkPath, VirtualBlock* root)
 		printf("符号链接不存在\n");
 		return false;
 	}
-	__super::Init();
 	m_isPath = root->GetVirtualPoint(linkPath)->IsPath();
 	return true;
 }
@@ -196,6 +202,8 @@ bool VirtualMKLink::SetCursor(std::list<std::string>subfiles)
 }
 bool VirtualMKLink::SetCursor()
 {
+	m_bCursor = true;
+	return true;
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
@@ -206,6 +214,8 @@ bool VirtualMKLink::SetCursor()
 }
 bool VirtualMKLink::ClearCursor()
 {
+	m_bCursor = false;
+	return true;
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
@@ -238,12 +248,19 @@ void VirtualMKLink::PrintMessage(std::list<std::string> subfiles, int state)
 }
 VirtualBlock* VirtualMKLink::GetVirtualPoint(std::list<std::string>subfiles)
 {
+	if (subfiles.size() == 1)
+	{
+		if (subfiles.back() == m_name)
+			return this;
+	}
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
 		printf("符号链接不存在\n");
 		return nullptr;
 	}
+	subfiles.pop_back();
+	subfiles.push_back(p->GetName());
 	return p->GetVirtualPoint(subfiles);
 }
 bool VirtualMKLink::MkLink(std::list<std::string> src, std::list<std::string> dst, VirtualBlock* root)
@@ -316,4 +333,14 @@ int VirtualMKLink::GetChildrenSize()
 		return 0;
 	}
 	return p->GetChildrenSize();
+}
+void VirtualMKLink::SetName(const char* oldChildName, const char* newChildName)
+{
+	auto p = m_root->GetVirtualPoint(m_paths);
+	if (!p)
+	{
+		printf("符号链接不存在\n");
+		return ;
+	}
+	return p->SetName(oldChildName,newChildName);
 }

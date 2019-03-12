@@ -107,6 +107,8 @@ bool CommondManager::analyzeCommond(const char* userInput)
 	std::list<std::string> allSubs;
 	PathUtil::SeperatePath(userInput, allSubs); 
 	std::string commondName = userInput; 
+	if (allSubs.size() == 0)
+		return true;
 	if (allSubs.back() == "dir")
 	{
 		allSubs.pop_back();

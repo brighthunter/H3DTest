@@ -14,8 +14,8 @@ VirtualDiskManager::~VirtualDiskManager(void)
 
 void VirtualDiskManager::RegisterCallback()
 {
-	Functor1wRet<const char*, bool> func_createPath = functor_ret(*this, &VirtualDiskManager::createPath);
-	Functor2wRet<const char*, bool,bool>	func_deletePath = functor(*this, &VirtualDiskManager::deletePath);
+	Functor1wRet<const char*, bool> func_createPath = functor_ret(*this, &VirtualDiskManager::CreateVirtualPath);
+	Functor2wRet<const char*, bool,bool>	func_deletePath = functor(*this, &VirtualDiskManager::DeleteVirtualPath);
 	Functor2wRet<std::string, std::string, bool>	func_copyPath = functor(*this, &VirtualDiskManager::copyPath);
 	Functor2<const char*, const char*>    func_rename = functor(*this, &VirtualDiskManager::Rename);
 	Functor1<const char*> func_AddCursor = functor(*this, &VirtualDiskManager::AddCursor);
@@ -97,7 +97,7 @@ bool VirtualDiskManager::analyzeCommond(const char* userInput)
 	return m_pCommondmanager->analyzeCommond(userInput);
 	
 }
-bool VirtualDiskManager::createPath(const char* userInput)
+bool VirtualDiskManager::CreateVirtualPath(const char* userInput)
 {
 
 	std::string fullpath;
@@ -105,21 +105,19 @@ bool VirtualDiskManager::createPath(const char* userInput)
 	std::list<std::string> subfiles;
 	PathUtil::BackslashToslash(fullpath);
 	PathUtil::SeperateFile(fullpath, subfiles);
-	return m_root->createPath(subfiles);
+	return m_root->CreateVirtualPath(subfiles);
 }
-bool VirtualDiskManager::deletePath(const char* userInput,bool s)
+bool VirtualDiskManager::DeleteVirtualPath(const char* userInput,bool s)
 {
 	std::string fullpath;
 	getFullPath(fullpath, userInput);
 	std::list<std::string> subfiles;
 	PathUtil::SeperateFile(fullpath, subfiles);
-	auto tmp = *subfiles.begin();
-	subfiles.pop_back();
 	if (!subfiles.size())
 	{
 		return true;
 	}
-	return m_root->deletePath(subfiles,s);
+	return m_root->DeleteVirtualPath(subfiles,s);
 }
 bool VirtualDiskManager::copyPath(std::string src, std::string dst)
 {
@@ -404,7 +402,7 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 			{
 				std::list < std::string > _paths;
 				PathUtil::SeperateFile((*it).c_str(), _paths);
-				m_root->createPath(_paths);
+				m_root->CreateVirtualPath(_paths);
 			}
 			else
 			{
@@ -472,7 +470,7 @@ void VirtualDiskManager::Rename(const char* userInput, const char* name)
 	std::string fullpath;
 	getFullPath(fullpath, userInput);
 	std::list < std::string > virtualFiles;
-	PathUtil::SeperatePath(fullpath, virtualFiles);
+	PathUtil::SeperateFile(fullpath, virtualFiles);
 	m_root->RenamePathFile(name, virtualFiles);
 	
 }
@@ -490,7 +488,7 @@ void VirtualDiskManager::DeleteVirtualFile(const char* userInput,int s)
 	std::string fullPath;
 	getFullPath(fullPath, userInput);
 	std::list<std::string> subfiles;
-	PathUtil::SeperateFile(fullPath, subfiles);
+	PathUtil::SeperateFile(fullPath, subfiles); 
 	m_root->DeleteVirtualFile(subfiles,s);
 }
 void VirtualDiskManager::MkLink(const char* src, const char* dst)
@@ -556,7 +554,7 @@ void VirtualDiskManager::Load(const char* src)
 		PathUtil::SeperateFile(virtualPath, subfiles);
 		if (PathIsDirectory((*it).c_str()))
 		{
-			m_root->createPath(subfiles);
+			m_root->CreateVirtualPath(subfiles);
 		}
 		else
 		{
@@ -564,6 +562,7 @@ void VirtualDiskManager::Load(const char* src)
 			fopen_s(&_file, (*it).c_str(), "rb");
 			fseek(_file, 0, SEEK_END);
 			auto fsize = ftell(_file);
+			fseek(_file, 0, SEEK_SET);
 			void* mem = malloc(fsize);
 			fread_s(mem, fsize, fsize, 1, _file);
 			fclose(_file);
