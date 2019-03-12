@@ -18,6 +18,7 @@ public:
 	void Register_Mklink(Functor2<const char*, const char*> func) { m_func8 = func; }
 	void Register_Save(Functor1<const char*> func) { m_func9 = func; }
 	void Register_Load(Functor1<const char*> func) { m_func10 = func; }
+	void Register_Move(Functor3<const char*,const char*,int> func) { m_func11 = func; }
 	//Notify
 	bool Notify_CreatePath(const char* userInput) { return m_func(userInput); }
 	void Notify_AddCursor(const char* vf) { m_func1(vf); }
@@ -30,6 +31,7 @@ public:
 	void Notify_Mklink(const char* src, const char* dst) { m_func8(src, dst); }
 	void Notify_Save(const char* dst) { m_func9(dst); }
 	void Notify_Load(const char* dst) { m_func10(dst); }
+	void Notify_Move(const char* src, const char* dst, int state) { m_func11(src,dst,state); }
 private:
 	VirtualDiskManagerObserver();
 	~VirtualDiskManagerObserver();
@@ -45,6 +47,7 @@ private:
 	Functor2<const char*, const char*> m_func8; 
 	Functor1<const char*> m_func9;
 	Functor1<const char*> m_func10;
+	Functor3<const char*, const char*, int> m_func11;
 };
 
 

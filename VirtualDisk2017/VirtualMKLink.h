@@ -6,7 +6,7 @@ class VirtualMKLink :public VirtualBlock
 public:
 	VirtualMKLink();
 	~VirtualMKLink();
-	virtual std::string GetDir() { return ""; };
+	virtual std::string GetDir();
 	virtual bool createPath(std::list<std::string> subfiles);
 	virtual bool deletePath(std::list<std::string> subfiles, int s = 0);
 	virtual bool DeleteVirtualFile(std::list<std::string> subfiles, int s = 0);

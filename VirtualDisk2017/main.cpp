@@ -22,6 +22,8 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("copy Test1\\t.txt @e:\\Test\\1\\");
 	p->analyzeCommond("save @e:\\SaveTest");
 	p->analyzeCommond("load @e:\\Test");
+	p->analyzeCommond("mklink test aaa");
+	
 	/*MEMORYSTATUSEX sysMemStatus;
 	sysMemStatus.dwLength = sizeof(sysMemStatus);
 	if (!GlobalMemoryStatusEx(&sysMemStatus))

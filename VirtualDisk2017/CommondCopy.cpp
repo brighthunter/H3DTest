@@ -17,6 +17,5 @@ bool CommondCopy::analyzeCommond(std::list<std::string> allSubs)
 		return false;
 	}
 	res &= VirtualDiskManagerObserver::GetInstance()->Notify_CopyPath(allSubs.back(), *allSubs.begin());
-
 	return res;
 }

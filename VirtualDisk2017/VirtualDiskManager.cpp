@@ -25,6 +25,7 @@ void VirtualDiskManager::RegisterCallback()
 	Functor2<const char*, const char*> func_mklink = functor(*this, &VirtualDiskManager::MkLink);
 	Functor1<const char*> func_save = functor(*this, &VirtualDiskManager::Save);
 	Functor1<const char*> func_load = functor(*this, &VirtualDiskManager::Load);
+	Functor3<const char*,const char*,int> func_move = functor(*this, &VirtualDiskManager::Move);
 	VirtualDiskManagerObserver::GetInstance()->Register_CreatePath(func_createPath);
 	VirtualDiskManagerObserver::GetInstance()->Register_AddCursor(func_AddCursor);
 	VirtualDiskManagerObserver::GetInstance()->Register_DeletePath(func_deletePath);
@@ -36,6 +37,7 @@ void VirtualDiskManager::RegisterCallback()
 	VirtualDiskManagerObserver::GetInstance()->Register_Mklink(func_mklink);
 	VirtualDiskManagerObserver::GetInstance()->Register_Save(func_save);
 	VirtualDiskManagerObserver::GetInstance()->Register_Load(func_load);
+	VirtualDiskManagerObserver::GetInstance()->Register_Move(func_move);
 }
 bool VirtualDiskManager::Init()
 {
@@ -321,7 +323,7 @@ bool VirtualDiskManager::CopyVirtualToRealDisk(std::string src, std::string dst)
 {
 	if (!PathIsDirectory(dst.c_str()))
 	{
-		printf("目标磁盘路径不存在或不是路径\n");
+		printf("目标磁盘路径%s不存在或不是路径\n",dst.c_str());
 		return false;
 	}
 	dst += '/';
@@ -500,7 +502,7 @@ void VirtualDiskManager::MkLink(const char* src, const char* dst)
 	std::list<std::string> srcfiles;
 	PathUtil::SeperateFile(fullPathsrc, srcfiles);
 	std::list<std::string> dstfiles;
-	PathUtil::SeperateFile(fullPathsrc, dstfiles);
+	PathUtil::SeperateFile(fullPathdst, dstfiles);
 	if (!m_root->GetVirtualPoint(srcfiles))
 	{
 		printf("不能为不存在的路径创建链接\n");
@@ -574,7 +576,20 @@ void VirtualDiskManager::Load(const char* src)
 
 	
 }
-void VirtualDiskManager::Move(std::list<std::string> src, std::list<std::string> dst)
+void VirtualDiskManager::Move(const char* src, const char* dst,int state)
 {
-	//m_root->Move(src, dst);
+	if (src[0] == '@' || dst[0] == '@')
+	{
+		printf("仅支持虚拟磁盘路径\n");
+		return;
+	}
+	std::string fullPathsrc;
+	getFullPath(fullPathsrc, src);
+	std::string fullPathdst;
+	getFullPath(fullPathdst, dst);
+	std::list<std::string> srcfiles;
+	PathUtil::SeperateFile(fullPathsrc, srcfiles);
+	std::list<std::string> dstfiles;
+	PathUtil::SeperateFile(fullPathdst, dstfiles);
+	m_root->Move(srcfiles, dstfiles, state);
 }

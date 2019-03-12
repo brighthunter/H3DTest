@@ -37,7 +37,7 @@ public:
 	void MkLink(const char* src, const char* dst);
 	void Save(const char* dst);
 	void Load(const char* src);
-	void Move(std::list<std::string> src, std::list<std::string> dst);
+	void Move(const char* src, const char* dst,int state);
 private:
 	VirtualFolder * m_root;
 	CommondManager* m_pCommondmanager;

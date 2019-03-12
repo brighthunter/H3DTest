@@ -6,6 +6,16 @@ VirtualMKLink::VirtualMKLink()
 VirtualMKLink::~VirtualMKLink()
 {
 }
+std::string VirtualMKLink::GetDir()
+{
+	auto p = m_root->GetVirtualPoint(m_paths);
+	if (!p)
+	{
+		printf("符号链接不存在\n");
+		return false;
+	}
+	return p->GetDir();
+}
 bool VirtualMKLink::createPath(std::list<std::string> subfiles)
 {
 	auto p = m_root->GetVirtualPoint(m_paths);
@@ -109,6 +119,7 @@ bool VirtualMKLink::Init(std::list<std::string> linkPath, VirtualBlock* root)
 		printf("符号链接不存在\n");
 		return false;
 	}
+	__super::Init();
 	m_isPath = root->GetVirtualPoint(linkPath)->IsPath();
 	return true;
 }
@@ -211,6 +222,7 @@ void VirtualMKLink::PrintPathMessage(bool hasName)
 		printf("符号链接不存在\n");
 		return;
 	}
+	printf("%s  %s    <SYMLINKD>     %s [%s]\n", m_datetime, m_daytime, m_name.c_str(),p->GetName().c_str());
 	return p->PrintPathMessage(hasName);
 
 }
