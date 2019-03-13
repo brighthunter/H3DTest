@@ -5,7 +5,6 @@
 #include <Windows.h>
 #include "StringUtil.h"
 #include "PathUtil.h"
-#include "tinyxml2/tinyxml2.h"
 #define VIRTUALDISK_HEAD "@VirtualDisk"
 int VirtualFolder::g_cacheType = -1;
 std::string VirtualFolder::g_cacheName = "";

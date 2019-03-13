@@ -3,7 +3,6 @@
 #include "PathUtil.h"
 #include "VirtualDiskManagerObserver.h"
 #include <Shlwapi.h>
-#include "tinyxml2/tinyxml2.h"
 #pragma comment(lib,"shlwapi.lib")
 VirtualDiskManager::VirtualDiskManager(void)
 {
