@@ -6,11 +6,12 @@
 class Commond
 {
 public:
-	Commond(CommondEnum type);
+	Commond(const char* type);
 	virtual ~Commond()  = 0 {};
 	virtual bool analyzeCommond(std::list<std::string> allSubs) = 0;
+	virtual bool analyzeCommondType(std::list<std::string> allSubs);
 private:
-	CommondEnum m_ctype;
+	std::string m_ctype;
 };
 
 

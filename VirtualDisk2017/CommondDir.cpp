@@ -1,6 +1,6 @@
 #include "CommondDir.h"
 #include "VirtualDiskManagerObserver.h"
-CommondDir::CommondDir(CommondEnum type)
+CommondDir::CommondDir(const char* type)
 	:Commond(type)
 {
 }

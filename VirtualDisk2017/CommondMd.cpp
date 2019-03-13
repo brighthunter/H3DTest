@@ -2,7 +2,7 @@
 #include "CommondMd.h"
 #include <string>
 #include "VirtualDiskManagerObserver.h"
-CommondMd::CommondMd(CommondEnum type)
+CommondMd::CommondMd(const char* type)
 	:Commond(type)
 {
 }

@@ -19,6 +19,8 @@ public:
 	void Register_Save(Functor1<const char*> func) { m_func9 = func; }
 	void Register_Load(Functor1<const char*> func) { m_func10 = func; }
 	void Register_Move(Functor3<const char*,const char*,int> func) { m_func11 = func; }
+	void Register_Saf(Functor1<const char*> func) { m_func12 = func; }
+	void Register_Lod(Functor1<const char*> func) { m_func13 = func; }
 	//Notify
 	bool Notify_CreatePath(const char* userInput) { return m_func(userInput); }
 	void Notify_AddCursor(const char* vf) { m_func1(vf); }
@@ -32,6 +34,8 @@ public:
 	void Notify_Save(const char* dst) { m_func9(dst); }
 	void Notify_Load(const char* dst) { m_func10(dst); }
 	void Notify_Move(const char* src, const char* dst, int state) { m_func11(src,dst,state); }
+	void Notify_Saf(const char* dst) { m_func12(dst); }
+	void Notify_Lod(const char* dst) { m_func13(dst); }
 private:
 	VirtualDiskManagerObserver();
 	~VirtualDiskManagerObserver();
@@ -48,6 +52,8 @@ private:
 	Functor1<const char*> m_func9;
 	Functor1<const char*> m_func10;
 	Functor3<const char*, const char*, int> m_func11;
+	Functor1<const char*> m_func12;
+	Functor1<const char*> m_func13;
 };
 
 

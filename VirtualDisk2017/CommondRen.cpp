@@ -1,6 +1,6 @@
 #include "CommondRen.h"
 #include "VirtualDiskManagerObserver.h"
-CommondRen::CommondRen(CommondEnum type)
+CommondRen::CommondRen(const char* type)
 	:Commond(type)
 {
 }

@@ -23,3 +23,8 @@ bool VirtualBlock::Init(VirtualBlock* pParent)
 	m_pParent = pParent;
 	return SetTimeNow();
 }
+void VirtualBlock::Encode(std::ofstream& of)
+{
+	int type = m_type;
+	of << type << STREND << GetParent()->GetName().length() << STREND << GetParent()->GetName() << STREND << m_name.length() << STREND << m_name << STREND << m_datetime << STREND << m_daytime << STREND;
+}

@@ -1,6 +1,7 @@
 #include "VirtualMKLink.h"
 VirtualMKLink::VirtualMKLink()
 {
+	m_type = MKLINK_BLOCK;
 }
 
 VirtualMKLink::~VirtualMKLink()
@@ -338,8 +339,22 @@ void VirtualMKLink::SetName(const char* oldChildName, const char* newChildName)
 }
 void VirtualMKLink::Encode(std::ofstream& of)
 {
+	int type = m_type;
+	__super::Encode(of); 
+	of<< m_isPath << STREND << m_paths.size() << STREND;
+	for (auto it = m_paths.begin(); it != m_paths.end(); it++)
+	{
+		of << *it << STREND;
+	}
 }
 void VirtualMKLink::Decode(std::ifstream& inf)
 {
-
+	size_t pathSize;
+	inf  >> m_datetime >> m_daytime >> m_isPath >> pathSize;
+	for (size_t i = 0; i < pathSize; i++)
+	{
+		std::string subPath;
+		inf >> subPath;
+		m_paths.push_back(subPath);
+	}
 }

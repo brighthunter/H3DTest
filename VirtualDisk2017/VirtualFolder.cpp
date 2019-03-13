@@ -6,10 +6,13 @@
 #include "StringUtil.h"
 #include "PathUtil.h"
 #include "tinyxml2/tinyxml2.h"
-#include <fstream>
-#define VIRTUALDISK_HEAD "@VritualDisk"
+#define VIRTUALDISK_HEAD "@VirtualDisk"
+int VirtualFolder::g_cacheType = -1;
+std::string VirtualFolder::g_cacheName = "";
+
 VirtualFolder::VirtualFolder(void)
 {
+	m_type = FOLDER_BLOCK;
 }
 
 VirtualFolder::~VirtualFolder(void)
@@ -642,19 +645,20 @@ void VirtualFolder::GetChildren(std::list<VirtualBlock*> &pchildren)
 }
 void VirtualFolder::Serialize(const char* dst)
 {
-	std::ofstream dstfile(dst);
-	dstfile << VIRTUALDISK_HEAD;
-	char head[128];
-	dstfile << head;
+	std::ofstream dstfile(dst,std::ios::binary);
+	dstfile << VIRTUALDISK_HEAD << STREND;
 	//dstfile.open(dst, std::ios::binary | std::ios::in, 0);
+	
 	Encode(dstfile);
 	dstfile.close();
 }
 void VirtualFolder::Encode(std::ofstream& of)
 {
+	
 	if (!m_broot)
 	{
-		of << m_type << GetParent()->GetName() << m_name << m_datetime << m_daytime;
+		__super::Encode(of);
+		
 	}
 	else
 	{
@@ -675,32 +679,162 @@ void VirtualFolder::Encode(std::ofstream& of)
 }
 void VirtualFolder::DeSerialize(const char* src)
 {
-	std::ifstream srcfile(src);
-	//char head[12];
-	std::string headName;
-	srcfile >> headName;
-	if (headName != VIRTUALDISK_HEAD)
+	std::ifstream srcfile(src,std::ios::binary);
+	//char head[13];
+	//head[12] = STREND;
+	std::string tmp;
+	//srcfile.read(head, 12);
+	srcfile >> tmp;
+	if (tmp == VIRTUALDISK_HEAD)
 	{
+		Decode(srcfile);		
+	}
+	else
+	{
+		printf("错误的文件类型\n");
 		return;
 	}
-	char head[128];
-	srcfile >> head;
-	Decode(srcfile);
 	srcfile.close();
+}
+void VirtualFolder::DecodeRoot(std::ifstream& inf)
+{
+	/*while (!inf.eof())
+	{
+		int type;
+		std::string pname;
+		inf >> type >> pname;
+		if (pname == m_name)
+		{
+			std::string childName;
+			inf >> childName;
+			switch (type)
+			{
+			case FOLDER_BLOCK:
+			{
+				auto p = new VirtualFolder();
+				m_vfChildren[childName] = p;
+				m_vfChildren[childName]->Init(this);
+				m_vfChildren[childName]->SetName(childName.c_str());
+				m_vfChildren[childName]->Decode(inf);
+					break;
+			}
+			case FILE_BLOCK:
+			{
+				auto p = new VirtualFile();
+				break;
+			}
+			case MKLINK_BLOCK:
+			{
+				auto p = new VirtualMKLink();
+				break;
+			}
+			default:
+				break;
+			}
+
+		}
+		else
+		{
+			printf("Root panme 错误pname = %s", pname);
+		}
+
+	}*/
 }
 void VirtualFolder::Decode(std::ifstream& inf)
 {
-	/*{
-		std::string file_name;
-		int file_type = 0;
-		inf >> file_name >> file_type;
-
-		switch (file_type)
+	char strEnd;
+	if (!m_broot)
+	{
+		inf >> m_datetime >> m_daytime;
+	}
+	while (!inf.eof())
+	{
+		int type;
+		int namesize;
+		std::string pname;
+		if (g_cacheName == "" && g_cacheType == -1)
 		{
-		case NORMAL_FILE:
-			new
-		default:
-			break;
-		}	*/
+			inf >> type;
+			inf >> namesize;
+			inf.read(&strEnd, 1);
+			StringUtil::ReadString(inf, pname, namesize);
+		}
+		else
+		{
+			type = g_cacheType;
+			pname = g_cacheName;
+			g_cacheName = "";
+			g_cacheType = -1;
+		}
+		if (pname == m_name)
+		{
+			std::string childName;
+			int childNamesize;
+			inf >> childNamesize;
+			inf.read(&strEnd, 1);
+			StringUtil::ReadString(inf,childName, childNamesize);
+			switch (type)
+			{
+			case FOLDER_BLOCK:
+			{
+				auto p = new VirtualFolder();
+				m_vfChildren[childName] = p;
+				m_vfChildren[childName]->Init(this);
+				m_vfChildren[childName]->SetName(childName.c_str());
+				m_vfChildren[childName]->Decode(inf);
+				break;
+			}
+			case FILE_BLOCK:
+			{
+				auto p = new VirtualFile();
+				m_vfChildren[childName] = p;
+				m_vfChildren[childName]->Init(this);
+				m_vfChildren[childName]->SetName(childName.c_str());
+				m_vfChildren[childName]->Decode(inf);
+				break;
+			}
+			case MKLINK_BLOCK:
+			{
+				auto p = new VirtualMKLink();
+				m_vfChildren[childName]->Init(this);
+				m_vfChildren[childName]->SetName(childName.c_str());
+				m_vfChildren[childName]->Decode(inf);
+				break;
+			}
+			default:
+				break;
+			}
 
+		}
+		else
+		{
+			if (m_broot)
+			{
+				
+				while (!inf.eof())
+				{
+					std::string tmp;
+					inf >> tmp;
+				}
+				
+				printf("Root panme 错误pname = %s\n", pname.c_str());
+			}
+			else
+			{
+				g_cacheName = pname;
+				g_cacheType = type;
+				if (type < 0 || type > Block_Type::MKLINK_BLOCK)
+				{
+					while (!inf.eof())
+					{
+						std::string tmp;
+						inf >> tmp;
+					}
+				}
+				return;
+			}
+		}
+
+	}
+	printf("loadEnd\n");
 }

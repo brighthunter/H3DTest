@@ -15,6 +15,8 @@ enum CommondEnum
 	COMMOND_SAVE,
 	COMMOND_LOAD,
 	COMMOND_CLS,
+	COMMOND_Saf,
+	COMMOND_Lod,
 	COMMOND_END
 };
 

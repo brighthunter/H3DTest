@@ -4,7 +4,7 @@
 class CommondMklink :public Commond
 {
 public:
-	CommondMklink(CommondEnum type);
+	CommondMklink(const char* type);
 	~CommondMklink();
 	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:

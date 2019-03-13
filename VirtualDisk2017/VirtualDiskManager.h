@@ -37,6 +37,8 @@ public:
 	void MkLink(const char* src, const char* dst);
 	void Save(const char* dst);
 	void Load(const char* src);
+	void Saf(const char* dst);
+	void Lod(const char* src);
 	void Move(const char* src, const char* dst,int state);
 	void Serialize(const char* dst);
 private:

@@ -26,6 +26,8 @@ void VirtualDiskManager::RegisterCallback()
 	Functor2<const char*, const char*> func_mklink = functor(*this, &VirtualDiskManager::MkLink);
 	Functor1<const char*> func_save = functor(*this, &VirtualDiskManager::Save);
 	Functor1<const char*> func_load = functor(*this, &VirtualDiskManager::Load);
+	Functor1<const char*> func_saf = functor(*this, &VirtualDiskManager::Saf);
+	Functor1<const char*> func_lod = functor(*this, &VirtualDiskManager::Lod);
 	Functor3<const char*,const char*,int> func_move = functor(*this, &VirtualDiskManager::Move);
 	VirtualDiskManagerObserver::GetInstance()->Register_CreatePath(func_createPath);
 	VirtualDiskManagerObserver::GetInstance()->Register_AddCursor(func_AddCursor);
@@ -39,6 +41,8 @@ void VirtualDiskManager::RegisterCallback()
 	VirtualDiskManagerObserver::GetInstance()->Register_Save(func_save);
 	VirtualDiskManagerObserver::GetInstance()->Register_Load(func_load);
 	VirtualDiskManagerObserver::GetInstance()->Register_Move(func_move);
+	VirtualDiskManagerObserver::GetInstance()->Register_Saf(func_saf);
+	VirtualDiskManagerObserver::GetInstance()->Register_Lod(func_lod);
 }
 bool VirtualDiskManager::Init()
 {
@@ -508,7 +512,7 @@ void VirtualDiskManager::MkLink(const char* src, const char* dst)
 	}
 	m_root->MkLink(srcfiles, dstfiles, m_root);
 }
-void VirtualDiskManager::Save(const char* dst)
+void VirtualDiskManager::Saf(const char* dst)
 {
 	if (dst[0] != '@')
 	{
@@ -517,12 +521,6 @@ void VirtualDiskManager::Save(const char* dst)
 	}
 	std::string realdst = dst;
 	realdst.erase(0, 1);
-	{
-		//Test
-		m_root->Serialize(realdst.c_str());
-		return;
-		//Test
-	}
 	if (!PathFileExists(realdst.c_str()))
 	{
 		printf("序列化磁盘路径不存在\n");
@@ -537,7 +535,7 @@ void VirtualDiskManager::Save(const char* dst)
 	m_root->Save(realdst.c_str());
 
 }
-void VirtualDiskManager::Load(const char* src)
+void VirtualDiskManager::Lod(const char* src)
 {
 	if (src[0] != '@')
 	{
@@ -546,12 +544,6 @@ void VirtualDiskManager::Load(const char* src)
 	}
 	std::string realsrc = src;
 	realsrc.erase(0, 1);
-	{
-		//Test
-		m_root->DeSerialize(realsrc.c_str());
-		return;
-		//Test
-	}
 	if (!PathFileExists(realsrc.c_str()))
 	{
 		printf("真实磁盘路径不存在\n");
@@ -589,6 +581,39 @@ void VirtualDiskManager::Load(const char* src)
 	}
 
 	
+}
+void VirtualDiskManager::Save(const char* dst)
+{
+	if (dst[0] != '@')
+	{
+		printf("请序列化到真实磁盘中\n");
+		return;
+	}
+	std::string realdst = dst;
+	realdst.erase(0, 1);
+	{
+		//Test
+		m_root->Serialize(realdst.c_str());
+		return;
+		//Test
+	}
+}
+void VirtualDiskManager::Load(const char* src)
+{
+	if (src[0] != '@')
+	{
+		printf("请从真实磁盘中重建虚拟磁盘文件\n");
+		return;
+	}	
+	m_root->Clear();
+	std::string realsrc = src;
+	realsrc.erase(0, 1);
+	{
+		//Test
+		m_root->DeSerialize(realsrc.c_str());
+		return;
+		//Test
+	}
 }
 void VirtualDiskManager::Move(const char* src, const char* dst,int state)
 {

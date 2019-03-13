@@ -11,6 +11,8 @@
 #include "CommondSave.h"
 #include "CommondLoad.h"
 #include "CommondCls.h"
+#include "CommondSaf.h"
+#include "CommondLod.h"
 #include "PathUtil.h"
 CommondManager::CommondManager(void)
 {
@@ -27,76 +29,92 @@ bool CommondManager::Init()
 		{
 		case COMMOND_DIR:
 		{
-			Commond* p = new CommondDir(COMMOND_DIR);
+			Commond* p = new CommondDir("dir");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_MD:
 		{
-			Commond* p = new CommondMd(COMMOND_MD);
+			Commond* p = new CommondMd("md");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_Rd:
 		{
-			Commond* p = new CommondRd(COMMOND_Rd);
+			Commond* p = new CommondRd("rd");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_CD:
 		{
-			Commond* p = new CommondCD(COMMOND_CD);
+			Commond* p = new CommondCD("cd");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_DEL:
 		{
-			Commond* p = new CommondDel(COMMOND_DEL);
+			Commond* p = new CommondDel("del");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_COPY:
 		{
-			Commond* p = new CommondCopy(COMMOND_COPY);
+			Commond* p = new CommondCopy("copy");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_REN:
 		{
-			Commond* p = new CommondRen(COMMOND_REN);
+			Commond* p = new CommondRen("ren");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_MOVE:
 		{
-			Commond* p = new CommondMove(COMMOND_MOVE);
+			Commond* p = new CommondMove("move");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_MKLINK:
 		{
-			Commond* p = new CommondMklink(COMMOND_MKLINK);
+			Commond* p = new CommondMklink("mklink");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_SAVE:
 		{
-			Commond* p = new CommondSave(COMMOND_SAVE);
+			Commond* p = new CommondSave("save");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_LOAD:
 		{
-			Commond* p = new CommondLoad(COMMOND_LOAD);
+			Commond* p = new CommondLoad("load");
 			m_CommondsVec.push_back(p);
 			break;
 		}
 		case COMMOND_CLS:
 		{
-			Commond* p = new CommondCls(COMMOND_CLS);
+			Commond* p = new CommondCls("cls");
 			m_CommondsVec.push_back(p);
 			break;
-		}		default:
+		}
+		case COMMOND_Saf:
+		{
+			Commond* p = new CommondSaf("saf");
+			m_CommondsVec.push_back(p);
+			break;
+		}
+		case COMMOND_Lod:
+		{
+			Commond* p = new CommondLod("lod");
+			m_CommondsVec.push_back(p);
+			break;
+		}
+		default:
+		{
+			printf("%d枚举类型没有初始化\n", i);
+		}
 			break;
 		}
 	}
@@ -109,7 +127,15 @@ bool CommondManager::analyzeCommond(const char* userInput)
 	std::string commondName = userInput; 
 	if (allSubs.size() == 0)
 		return true;
-	if (allSubs.back() == "dir")
+	bool res = false;
+	for (size_t i = 0; i != COMMOND_END; i++)
+	{
+		res |= m_CommondsVec[i]->analyzeCommondType(allSubs);
+	}
+	if (!res)
+		printf("未知命令\n");
+	return res;
+	/*if (allSubs.back() == "dir")
 	{
 		allSubs.pop_back();
 		return 	m_CommondsVec[COMMOND_DIR]->analyzeCommond(allSubs);
@@ -173,5 +199,5 @@ bool CommondManager::analyzeCommond(const char* userInput)
 	{
 		printf("未知命令\n");
 		return false;
-	}
+	}*/
 }

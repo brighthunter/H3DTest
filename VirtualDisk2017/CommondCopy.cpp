@@ -1,6 +1,6 @@
 #include "CommondCopy.h"
 #include "VirtualDiskManagerObserver.h"
-CommondCopy::CommondCopy(CommondEnum type)
+CommondCopy::CommondCopy(const char* type)
 	:Commond(type)
 {
 }

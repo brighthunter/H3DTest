@@ -1,5 +1,5 @@
 #include "CommondCls.h"
-CommondCls::CommondCls(CommondEnum type)
+CommondCls::CommondCls(const char* type)
 	:Commond(type)
 {
 }

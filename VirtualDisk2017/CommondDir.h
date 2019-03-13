@@ -4,7 +4,7 @@
 class CommondDir :public Commond
 {
 public:
-	CommondDir(CommondEnum type);
+	CommondDir(const char* type);
 	virtual ~CommondDir();
 	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:

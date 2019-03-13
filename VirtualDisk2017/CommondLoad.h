@@ -4,7 +4,7 @@
 class CommondLoad :public Commond
 {
 public:
-	CommondLoad (CommondEnum type);
+	CommondLoad (const char* type);
 	~CommondLoad ();
 	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:

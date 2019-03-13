@@ -4,7 +4,7 @@
 class CommondMove :public Commond
 {
 public:
-	CommondMove(CommondEnum type);
+	CommondMove(const char* type);
 	~CommondMove();
 	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:

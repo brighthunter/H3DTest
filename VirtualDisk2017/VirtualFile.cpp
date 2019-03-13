@@ -2,6 +2,7 @@
 #include "StringUtil.h"
 VirtualFile::VirtualFile()
 {
+	m_type = FILE_BLOCK;
 }
 
 VirtualFile::~VirtualFile()
@@ -69,8 +70,16 @@ void VirtualFile::Combine(VirtualBlock*pchild, int state)
 }
 void VirtualFile::Encode(std::ofstream& of)
 {
+	__super::Encode(of);
+	of << m_size << STREND;
+	of.write((char*)m_mem, m_size);
+	of << STREND;
 }
 void VirtualFile::Decode(std::ifstream& inf)
 {
-
+	inf >> m_datetime >> m_daytime >> m_size;
+	m_mem = malloc(m_size);
+	char strEnd;
+	inf.read((char*)&strEnd, 1);
+	inf.read((char*)m_mem, m_size);
 }

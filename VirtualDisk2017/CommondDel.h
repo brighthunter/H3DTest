@@ -4,7 +4,7 @@
 class CommondDel :public Commond
 {
 public:
-	CommondDel(CommondEnum type);
+	CommondDel(const char* type);
 	~CommondDel();
 	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:

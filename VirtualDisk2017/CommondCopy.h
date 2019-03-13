@@ -4,7 +4,7 @@
 class CommondCopy :public Commond
 {
 public:
-	CommondCopy(CommondEnum type);
+	CommondCopy(const char* type);
 	~CommondCopy();
 	virtual bool analyzeCommond(std::list<std::string> allSubs);
 private:

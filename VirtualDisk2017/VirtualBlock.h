@@ -3,9 +3,11 @@
 #include <string>
 #include <map>
 #include <list>
-enum BlockType
+#include <fstream>
+#define STREND '\n'
+enum Block_Type
 {
-	FLOLDER_BLOCK,
+	FOLDER_BLOCK,
 	FILE_BLOCK,
 	MKLINK_BLOCK
 };
@@ -59,7 +61,7 @@ protected:
 	std::string m_name;
 	bool m_bpredel;
 	VirtualBlock* m_pParent = nullptr;
-	BlockType m_type;
+	Block_Type m_type;
 private:
 	virtual bool SetTimeNow();
 };
