@@ -51,9 +51,7 @@ public:
 	void Serialize(const char* dst);
 	void DeSerialize(const char* src);
 	void Encode(std::ofstream& of);
-	//void Decode(std::ifstream& inf,std::string& pname,int&type);
 	void Decode(std::ifstream& inf);
-	void DecodeRoot(std::ifstream& inf);
 private:
 	std::map<std::string, VirtualBlock*> m_vfChildren;
 	bool m_bCursor = false;

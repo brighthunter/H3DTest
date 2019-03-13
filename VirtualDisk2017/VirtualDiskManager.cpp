@@ -591,12 +591,9 @@ void VirtualDiskManager::Save(const char* dst)
 	}
 	std::string realdst = dst;
 	realdst.erase(0, 1);
-	{
-		//Test
-		m_root->Serialize(realdst.c_str());
-		return;
-		//Test
-	}
+	m_root->Serialize(realdst.c_str());
+	return;
+	
 }
 void VirtualDiskManager::Load(const char* src)
 {
@@ -609,10 +606,8 @@ void VirtualDiskManager::Load(const char* src)
 	std::string realsrc = src;
 	realsrc.erase(0, 1);
 	{
-		//Test
 		m_root->DeSerialize(realsrc.c_str());
 		return;
-		//Test
 	}
 }
 void VirtualDiskManager::Move(const char* src, const char* dst,int state)

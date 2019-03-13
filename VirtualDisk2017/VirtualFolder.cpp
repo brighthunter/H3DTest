@@ -646,6 +646,11 @@ void VirtualFolder::GetChildren(std::list<VirtualBlock*> &pchildren)
 void VirtualFolder::Serialize(const char* dst)
 {
 	std::ofstream dstfile(dst,std::ios::binary);
+	if (!dstfile)
+	{
+		printf("序列化文件路径不存在\n");
+		return;
+	}
 	dstfile << VIRTUALDISK_HEAD << STREND;
 	//dstfile.open(dst, std::ios::binary | std::ios::in, 0);
 	
@@ -679,13 +684,16 @@ void VirtualFolder::Encode(std::ofstream& of)
 }
 void VirtualFolder::DeSerialize(const char* src)
 {
+	
 	std::ifstream srcfile(src,std::ios::binary);
-	//char head[13];
-	//head[12] = STREND;
-	std::string tmp;
-	//srcfile.read(head, 12);
-	srcfile >> tmp;
-	if (tmp == VIRTUALDISK_HEAD)
+	if (!srcfile)
+	{
+		printf("反序列化文件路径不存在\n");
+		return;
+	}
+	std::string vh;
+	srcfile >> vh;
+	if (vh == VIRTUALDISK_HEAD)
 	{
 		Decode(srcfile);		
 	}
@@ -696,50 +704,7 @@ void VirtualFolder::DeSerialize(const char* src)
 	}
 	srcfile.close();
 }
-void VirtualFolder::DecodeRoot(std::ifstream& inf)
-{
-	/*while (!inf.eof())
-	{
-		int type;
-		std::string pname;
-		inf >> type >> pname;
-		if (pname == m_name)
-		{
-			std::string childName;
-			inf >> childName;
-			switch (type)
-			{
-			case FOLDER_BLOCK:
-			{
-				auto p = new VirtualFolder();
-				m_vfChildren[childName] = p;
-				m_vfChildren[childName]->Init(this);
-				m_vfChildren[childName]->SetName(childName.c_str());
-				m_vfChildren[childName]->Decode(inf);
-					break;
-			}
-			case FILE_BLOCK:
-			{
-				auto p = new VirtualFile();
-				break;
-			}
-			case MKLINK_BLOCK:
-			{
-				auto p = new VirtualMKLink();
-				break;
-			}
-			default:
-				break;
-			}
 
-		}
-		else
-		{
-			printf("Root panme 错误pname = %s", pname);
-		}
-
-	}*/
-}
 void VirtualFolder::Decode(std::ifstream& inf)
 {
 	char strEnd;
