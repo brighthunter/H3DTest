@@ -474,7 +474,7 @@ void VirtualFolder::PrintMessage(std::list<std::string> subfiles,int state)
 		{
 			if (!(state & 0x10))
 			{
-				it->second->PrintMessage(subfiles,state);
+				it->second->PrintMessage();
 				int size = it->second->GetFileSzie();
 				allfileSize += size;
 				++fileNum;
@@ -591,17 +591,19 @@ void VirtualFolder::Move(std::list<std::string> src,std::list<std::string> dst, 
 		printf("移动目的路径不存在\n");
 		return;
 	}
-	src.pop_front();
-	auto psrcparent = psrc->GetParent();
-	if (!psrcparent)
+	if (psrc->IsRoot())
 	{
 		printf("不能移动磁盘根目录\n");
 	}
+	/*src.pop_front();
+	auto psrcparent = psrc->GetParent();
+	*/
+	
 	pdst->CopyForMove(psrc, state);
-	if (!psrc->GetChildrenSize())
-	{
-		psrcparent->EraseChild(psrc->GetName());
-	}
+	//if (!psrc->GetChildrenSize())
+	//{
+	//	psrcparent->EraseChild(psrc->GetName());
+	//}
 }
 void VirtualFolder::EraseChild(std::string cname)
 {
@@ -616,13 +618,26 @@ void VirtualFolder::CopyForMove(VirtualBlock* pchild,int state)
 	{
 		if (pchild->IsPath() && m_vfChildren[pchild->GetName()]->IsPath())
 		{
-			m_vfChildren[pchild->GetName()]->Combine(pchild, state);
+			std::list<VirtualBlock*> children;
+			pchild->GetChildren(children);
+			for (auto it = children.begin(); it != children.end(); it++)
+			{
+				m_vfChildren[pchild->GetName()]->CopyForMove(*it,state);
+			}
+			if (!pchild->GetChildrenSize())
+			{
+				pchild->GetParent()->EraseChild(pchild->GetName());
+				delete pchild;
+			}
+			//m_vfChildren[pchild->GetName()]->Combine(pchild, state);
 		
 		}
 		else if(state &0x1)
 		{
 			delete m_vfChildren[pchild->GetName()];
 			m_vfChildren[pchild->GetName()] = pchild;
+			pchild->GetParent()->EraseChild(pchild->GetName());
+			pchild->Init(this);
 		}
 		else
 		{
@@ -654,11 +669,18 @@ void VirtualFolder::Combine(VirtualBlock* pComb, int state)
 	 {
 		 if (m_vfChildren.find((*it)->GetName()) != m_vfChildren.end())
 		 {
-			 m_vfChildren[(*it)->GetName()]->CopyForMove(*it, state);
-			 if (!(*it)->GetChildrenSize())
+			 if (state & 0x1)
 			 {
-				 p->EraseChild((*it)->GetName());
-			 }	
+				 m_vfChildren[(*it)->GetName()]->CopyForMove(*it, state);
+				 if (!(*it)->GetChildrenSize())
+				 {
+					 p->EraseChild((*it)->GetName());
+				 }
+			 }
+			 else
+			 {
+			 }
+			 
 		 }
 		 else
 		 {

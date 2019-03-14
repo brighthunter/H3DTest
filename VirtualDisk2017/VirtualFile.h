@@ -43,6 +43,7 @@ public:
 	virtual void SetName(const char* oldChildName, const char* newChildName) { return; }
 	virtual void Encode(std::ofstream& of);
 	virtual bool Decode(std::ifstream& inf);
+	virtual void GetChildren(std::list<VirtualBlock*>&pchildren) {}
 private:
 	void* m_mem = nullptr;
 	int m_size = 0;

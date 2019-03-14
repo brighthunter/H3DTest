@@ -22,7 +22,11 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("copy Test\\t.txt Test1");
 	p->analyzeCommond("copy Test1\\t.txt @e:\\Test\\1\\");
 	p->analyzeCommond("lod @e:\\Test");
-	p->analyzeCommond("copy t*t MoveTest");
+	p->analyzeCommond("copy *t MoveTest");
+	p->analyzeCommond("cd MoveTest");
+	p->analyzeCommond("dir");
+	p->analyzeCommond("mklink From Link");
+	p->analyzeCommond("move Link MoveTo");
 	return;
 	p->analyzeCommond("save @e:\\SaveTest\\1");
 	p->analyzeCommond("load @e:\\SaveTest\\1");
@@ -37,6 +41,7 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("lod @e:\\ÎÄµµ");
 	p->analyzeCommond("save @e:\\SaveTest\\2");
 	p->analyzeCommond("load @e:\\SaveTest\\2");
+	
 
 	//getchar();
 }

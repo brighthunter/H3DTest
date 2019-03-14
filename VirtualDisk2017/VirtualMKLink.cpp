@@ -1,4 +1,5 @@
 #include "VirtualMKLink.h"
+#include "StringUtil.h"
 VirtualMKLink::VirtualMKLink()
 {
 	m_type = MKLINK_BLOCK;
@@ -73,13 +74,14 @@ bool VirtualMKLink::DeleteVirtualFile(std::string fileName,int s)
 }
 bool VirtualMKLink::IsPathEmpty()
 {
-	auto p = m_root->GetVirtualPoint(m_paths);
+	return m_isPath;
+	/*auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
 		printf("IsPathEmpty·ûºÅÁ´½Ó²»´æÔÚ\n");
 		return false;
 	}
-	return p->IsPathEmpty();
+	return p->IsPathEmpty();*/
 }
 
 bool VirtualMKLink::IsRoot()
@@ -232,7 +234,10 @@ void VirtualMKLink::PrintPathMessage(bool hasName)
 void VirtualMKLink::PrintMessage(std::list<std::string> subfiles, int state)
 {
 	if (subfiles.size() == 0)
+	{
 		PrintPathMessage(true);
+		return;
+	}
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
@@ -322,6 +327,7 @@ void VirtualMKLink::Combine(VirtualBlock*pchild, int state)
 }
 int VirtualMKLink::GetChildrenSize() 
 {
+	return 0;
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{

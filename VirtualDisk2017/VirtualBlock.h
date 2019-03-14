@@ -43,7 +43,7 @@ public:
 	virtual bool ClearCursor() = 0;
 	virtual VirtualBlock* GetVirtualPoint(std::list<std::string>subfiles) = 0;
 	virtual void PrintPathMessage(bool hasName) = 0;
-	virtual void PrintMessage(std::list<std::string> subfiles,int state = 0) = 0;
+	virtual void PrintMessage(std::list<std::string> subfiles = std::list<std::string>(),int state = 0) = 0;
 	virtual bool MkLink(std::list<std::string> src, std::list<std::string> dst, VirtualBlock* root) = 0;
 	virtual void Save(std::string dst) = 0;
 	virtual void Clear() = 0;
@@ -55,6 +55,7 @@ public:
 	virtual VirtualBlock* GetParent() { return m_pParent; }
 	virtual void Encode(std::ofstream& of) = 0;
 	virtual bool Decode(std::ifstream& inf) = 0;
+	virtual void GetChildren(std::list<VirtualBlock*>&pchildren) = 0;
 protected:
 	char m_datetime[32];
 	char m_daytime[32];

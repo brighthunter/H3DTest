@@ -44,6 +44,7 @@ public:
 	void SetName(const char* oldChildName, const char* newChildName);
 	void Encode(std::ofstream& of);
 	bool Decode(std::ifstream& inf) ;
+	void GetChildren(std::list<VirtualBlock*>&pchildren) {};
 private:
 	VirtualBlock* m_root;
 	std::list<std::string> m_paths;
