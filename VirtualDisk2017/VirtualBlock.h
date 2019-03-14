@@ -54,7 +54,7 @@ public:
 	virtual int GetChildrenSize() = 0;
 	virtual VirtualBlock* GetParent() { return m_pParent; }
 	virtual void Encode(std::ofstream& of) = 0;
-	virtual void Decode(std::ifstream& inf) = 0;
+	virtual bool Decode(std::ifstream& inf) = 0;
 protected:
 	char m_datetime[32];
 	char m_daytime[32];

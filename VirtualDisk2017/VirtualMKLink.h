@@ -43,7 +43,7 @@ public:
 	int GetChildrenSize();
 	void SetName(const char* oldChildName, const char* newChildName);
 	void Encode(std::ofstream& of);
-	void Decode(std::ifstream& inf) ;
+	bool Decode(std::ifstream& inf) ;
 private:
 	VirtualBlock* m_root;
 	std::list<std::string> m_paths;

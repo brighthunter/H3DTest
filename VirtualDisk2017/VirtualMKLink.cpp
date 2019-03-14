@@ -231,6 +231,8 @@ void VirtualMKLink::PrintPathMessage(bool hasName)
 }
 void VirtualMKLink::PrintMessage(std::list<std::string> subfiles, int state)
 {
+	if (subfiles.size() == 0)
+		PrintPathMessage(true);
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
@@ -278,6 +280,7 @@ void VirtualMKLink::Save(std::string dst)
 }
 void VirtualMKLink::Clear()
 {
+	return;
 	auto p = m_root->GetVirtualPoint(m_paths);
 	if (!p)
 	{
@@ -347,7 +350,7 @@ void VirtualMKLink::Encode(std::ofstream& of)
 		of << *it << STREND;
 	}
 }
-void VirtualMKLink::Decode(std::ifstream& inf)
+bool VirtualMKLink::Decode(std::ifstream& inf)
 {
 	size_t pathSize;
 	inf  >> m_datetime >> m_daytime >> m_isPath >> pathSize;
@@ -357,4 +360,5 @@ void VirtualMKLink::Decode(std::ifstream& inf)
 		inf >> subPath;
 		m_paths.push_back(subPath);
 	}
+	return true;
 }

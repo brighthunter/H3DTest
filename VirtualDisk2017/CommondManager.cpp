@@ -133,7 +133,7 @@ bool CommondManager::analyzeCommond(const char* userInput)
 		res |= m_CommondsVec[i]->analyzeCommondType(allSubs);
 	}
 	if (!res)
-		printf("Î´ÖªÃüÁî\n");
+		printf("[%s] ÃüÁîÎ´¶¨Òå\n", allSubs.back().c_str());
 	return res;
 	/*if (allSubs.back() == "dir")
 	{

@@ -1,5 +1,6 @@
 #include "VirtualFile.h"
 #include "StringUtil.h"
+#include <Windows.h>
 VirtualFile::VirtualFile()
 {
 	m_type = FILE_BLOCK;
@@ -19,12 +20,33 @@ bool VirtualFile::SetMemory(void* mem, int memSize)
 	{
 		m_size = memSize;
 		m_mem = malloc(memSize);
+		if (!m_mem)
+		{
+			printf("ÐéÄâ´ÅÅÌÄÚ´æ²»×ã\n");
+			m_size = 0;
+			return false;
+		}
 		memcpy(m_mem, mem, memSize);
+#ifdef Test
+		MEMORYSTATUSEX sysMemStatus;
+		sysMemStatus.dwLength = sizeof(sysMemStatus);
+		if (!GlobalMemoryStatusEx(&sysMemStatus))
+		{
+			printf("GlobalMemoryStatusEx fail\n");
+			sysMemStatus.ullAvailVirtual = 0;
+		}
+		int DIV = 1024 * 1024;
+		char debugMsg[128];
+		sprintf_s(debugMsg,"total MB of virtual memory:%I64d\n", sysMemStatus.ullAvailVirtual / DIV);
+		OutputDebugString(debugMsg);
+#endif
 	}
+
 	return true;
 }
 bool VirtualFile::GetFileMem(void** mem, int& size)
 {
+	
 	if (m_size == 0)
 		return false;
 	*mem = m_mem;
@@ -75,11 +97,17 @@ void VirtualFile::Encode(std::ofstream& of)
 	of.write((char*)m_mem, m_size);
 	of << STREND;
 }
-void VirtualFile::Decode(std::ifstream& inf)
+bool VirtualFile::Decode(std::ifstream& inf)
 {
 	inf >> m_datetime >> m_daytime >> m_size;
 	m_mem = malloc(m_size);
+	if (!m_mem)
+	{
+		m_size = 0;
+		return false;
+	}
 	char strEnd;
 	inf.read((char*)&strEnd, 1);
 	inf.read((char*)m_mem, m_size);
+	return true;
 }

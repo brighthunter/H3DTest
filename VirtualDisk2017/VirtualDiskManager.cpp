@@ -206,6 +206,11 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				fseek(_file, 0, SEEK_END);
 				auto fsize = ftell(_file);
 				void* mem = malloc(fsize);
+				if (!mem)
+				{
+					fclose(_file);
+					continue;
+				}
 				fread_s(mem, fsize, fsize, 1, _file);
 				fclose(_file);
 				fopen_s(&_file, (*it).c_str(), "wb");
@@ -244,6 +249,11 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				fseek(_file, 0, SEEK_END);
 				auto fsize = ftell(_file);
 				void* mem = malloc(fsize);
+				if (!mem)
+				{
+					fclose(_file);
+					continue;
+				}
 				fread_s(mem, fsize, fsize, 1, _file);
 				fclose(_file);
 				fopen_s(&_file, tmp.c_str(), "wb");
@@ -399,13 +409,15 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 	PathUtil::BackslashToslash(src);
 	if (PathIsDirectory(src.c_str()))
 	{	
-		PathUtil::GetAllDirAndFiles(src, realFiles);
+		PathUtil::GetAllFiles(src, realFiles);
 		for (auto it = realFiles.begin(); it != realFiles.end(); it++)
 		{
+			std::list < std::string > _paths;
+			PathUtil::SeperateFile((*it).c_str(), _paths);
 			if (PathIsDirectory((*it).c_str()))
 			{
-				std::list < std::string > _paths;
-				PathUtil::SeperateFile((*it).c_str(), _paths);
+				printf("´úÂë´íÎó£º%sÂ·¾¶ÅÐ¶Ï´íÎó\n",(*it).c_str());
+				continue;
 				m_root->CreateVirtualPath(_paths);
 			}
 			else
@@ -415,11 +427,21 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 				fseek(_file, 0, SEEK_END);
 				auto fsize = ftell(_file);
 				void* mem = malloc(fsize);
+				if (!mem)
+				{
+					//printf("ÄÚ´æÒÑÂú\n");
+					fclose(_file);
+					continue;
+					//return false;
+				}
 				fseek(_file, 0, SEEK_SET);
 				fread_s(mem, fsize,fsize,1,_file);
-				m_root->CreateVirtualFile(mem, fsize, dstFiles, (*it).c_str());
+				auto fileName = _paths.front();
+				bool b = m_root->CreateVirtualFile(mem, fsize, dstFiles, fileName.c_str());
 				free(mem);
 				fclose(_file);
+				if (!b)
+					return false;
 			}
 
 		}
@@ -454,9 +476,16 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 				auto fsize = ftell(_file);
 				fseek(_file, 0, SEEK_SET);
 				void* mem = malloc(fsize);
+				if (!mem)
+				{
+					fclose(_file);
+					continue;
+				}
 				fread_s(mem, fsize, 1, fsize, _file);
-				m_root->CreateVirtualFile(mem,fsize, dstFiles, (*it).c_str());
+				bool b = m_root->CreateVirtualFile(mem,fsize, dstFiles, (*it).c_str());
 				free(mem);
+				if(!b)
+					return false;
 			}
 			
 		}
@@ -569,12 +598,21 @@ void VirtualDiskManager::Lod(const char* src)
 			fseek(_file, 0, SEEK_END);
 			auto fsize = ftell(_file);
 			fseek(_file, 0, SEEK_SET);
+			printf("Reading %s Begin\n",(*it).c_str());
 			void* mem = malloc(fsize);
+			if (!mem)
+			{
+				fclose(_file);
+				continue;
+			}
 			fread_s(mem, fsize, fsize, 1, _file);
 			fclose(_file);
+			printf("Reading %s End\n", (*it).c_str());
 			auto dstName = subfiles.front();
 			subfiles.pop_front();
-			m_root->CreateVirtualFile(mem,fsize, subfiles, dstName.c_str());
+			auto b = m_root->CreateVirtualFile(mem,fsize, subfiles, dstName.c_str());
+			if (!b)
+				return;
 			free(mem);
 		}
 	}

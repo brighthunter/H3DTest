@@ -189,7 +189,7 @@ bool VirtualFolder::FindPath(std::list<std::string> subfiles)
 	auto p = GetVirtualPoint(subfiles);
 	if (!p)
 	{
-		printf("磁盘路径不存在\n");
+		//printf("磁盘路径不存在\n");
 		return false;
 	}
 	if (p->IsPath())
@@ -245,8 +245,7 @@ bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, std::list<std::strin
 	}
 	if (p->IsPath())
 	{
-		p->CreateVirtualFile(mem, fsize, dstName);
-		return true;
+		return p->CreateVirtualFile(mem, fsize, dstName);
 	}
 	else
 	{
@@ -258,11 +257,30 @@ bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, const char* dstName)
 {
 	if (m_vfChildren.find(dstName) != m_vfChildren.end())
 		return false;
+	MEMORYSTATUSEX sysMemStatus;
+	sysMemStatus.dwLength = sizeof(sysMemStatus);
+	if (!GlobalMemoryStatusEx(&sysMemStatus))
+	{
+		printf("GlobalMemoryStatusEx fail\n");
+		sysMemStatus.ullAvailVirtual = 0;
+	}
+	int size = 500 * 1024 * 1024;
+	if ((sysMemStatus.ullAvailVirtual < fsize) || (sysMemStatus.ullAvailVirtual < size))
+	{
+		printf("内存已满\n");
+		return false;
+	}
 	auto vf = new VirtualFile();
-	vf->SetMemory(mem,fsize);
+	bool b = vf->SetMemory(mem,fsize);
+	if (!b)
+	{
+		delete vf;
+		return true;
+	}
+
 	m_vfChildren[dstName] = vf;
-	m_vfChildren[dstName]->SetName(dstName);
 	m_vfChildren[dstName]->Init(this);
+	m_vfChildren[dstName]->SetName(dstName);
 	return true;
 }
 bool VirtualFolder::GetAllFile(std::list<std::string>paths, std::list<std::string>& files)
@@ -468,12 +486,16 @@ void VirtualFolder::PrintMessage(std::list<std::string> subfiles,int state)
 	if (!GlobalMemoryStatusEx(&sysMemStatus))
 	{
 		printf("GlobalMemoryStatusEx fail\n");
-		sysMemStatus.ullTotalVirtual = 0;
+		sysMemStatus.ullAvailVirtual = 0;
 	}
-	std::string ullstr = std::to_string(sysMemStatus.ullTotalVirtual);
+	if (sysMemStatus.ullAvailVirtual < 500 * 1024 * 1024)
+		sysMemStatus.ullAvailVirtual = 0;
+	else
+		sysMemStatus.ullAvailVirtual -= 500 * 1024 * 1024;
+	std::string ullstr = std::to_string(sysMemStatus.ullAvailVirtual);
 	StringUtil::AddDot(ullstr);
 	printf("               %d 个文件%19d 字节\n", fileNum, allfileSize);
-	printf("               %d 个目录%19s 可用字节\n", fileNum, ullstr.c_str());
+	printf("               %d 个目录%19s 可用字节\n", dirNum, ullstr.c_str());
 	for (auto it = subDirs.begin(); it != subDirs.end(); it++)
 	{
 		(*it)->PrintMessage(subfiles,state);
@@ -543,9 +565,16 @@ void VirtualFolder::Clear()
 {
 	for (auto it = m_vfChildren.begin(); it != m_vfChildren.end(); it++)
 	{
+#ifdef Test
+		if (m_name == "v:")
+		{
+			int a = 0;
+		}
+#endif
 		it->second->Clear();
 		delete it->second;
-	}
+		//it = m_vfChildren.erase(it);
+;	}
 	m_vfChildren.clear();
 }
 void VirtualFolder::Move(std::list<std::string> src,std::list<std::string> dst, int state)
@@ -603,6 +632,8 @@ void VirtualFolder::CopyForMove(VirtualBlock* pchild,int state)
 	else
 	{
 		m_vfChildren[pchild->GetName()] = pchild;
+		pchild->GetParent()->EraseChild(pchild->GetName());
+		pchild->Init(this);
 	}
 }
 
@@ -704,7 +735,7 @@ void VirtualFolder::DeSerialize(const char* src)
 	srcfile.close();
 }
 
-void VirtualFolder::Decode(std::ifstream& inf)
+bool VirtualFolder::Decode(std::ifstream& inf)
 {
 	char strEnd;
 	if (!m_broot)
@@ -745,7 +776,8 @@ void VirtualFolder::Decode(std::ifstream& inf)
 				m_vfChildren[childName] = p;
 				m_vfChildren[childName]->Init(this);
 				m_vfChildren[childName]->SetName(childName.c_str());
-				m_vfChildren[childName]->Decode(inf);
+				if (!m_vfChildren[childName]->Decode(inf))
+					return false;
 				break;
 			}
 			case FILE_BLOCK:
@@ -754,7 +786,8 @@ void VirtualFolder::Decode(std::ifstream& inf)
 				m_vfChildren[childName] = p;
 				m_vfChildren[childName]->Init(this);
 				m_vfChildren[childName]->SetName(childName.c_str());
-				m_vfChildren[childName]->Decode(inf);
+				if (!m_vfChildren[childName]->Decode(inf))
+					return false;
 				break;
 			}
 			case MKLINK_BLOCK:
@@ -762,7 +795,8 @@ void VirtualFolder::Decode(std::ifstream& inf)
 				auto p = new VirtualMKLink();
 				m_vfChildren[childName]->Init(this);
 				m_vfChildren[childName]->SetName(childName.c_str());
-				m_vfChildren[childName]->Decode(inf);
+				if (!m_vfChildren[childName]->Decode(inf))
+					return false;
 				break;
 			}
 			default:
@@ -795,10 +829,15 @@ void VirtualFolder::Decode(std::ifstream& inf)
 						inf >> tmp;
 					}
 				}
-				return;
+				return true;
 			}
 		}
 
 	}
-	printf("loadEnd\n");
+	g_cacheName = "";
+	g_cacheType = -1;
+	return true;
+#ifdef Test
+	printf("LoadEnd");
+#endif
 }

@@ -16,14 +16,14 @@ void TestTool()
 }
 void Test(VirtualDiskManager *p)
 {
-	
-
 	p->analyzeCommond("md Test");
 	p->analyzeCommond("md Test1");
 	p->analyzeCommond("copy @e:\\Test\\t.txt Test");
 	p->analyzeCommond("copy Test\\t.txt Test1");
 	p->analyzeCommond("copy Test1\\t.txt @e:\\Test\\1\\");
 	p->analyzeCommond("lod @e:\\Test");
+	p->analyzeCommond("copy t*t MoveTest");
+	return;
 	p->analyzeCommond("save @e:\\SaveTest\\1");
 	p->analyzeCommond("load @e:\\SaveTest\\1");
 	p->analyzeCommond("move test1 MoveTest");
@@ -31,15 +31,14 @@ void Test(VirtualDiskManager *p)
 	p->analyzeCommond("copy test @e:\\Test\\test\\CopyTest");
 
 	p->analyzeCommond("saf @e:\\SaveTest\\Save1");
-	/*MEMORYSTATUSEX sysMemStatus;
-	sysMemStatus.dwLength = sizeof(sysMemStatus);
-	if (!GlobalMemoryStatusEx(&sysMemStatus))
-	{
-		printf("GlobalMemoryStatusEx fail\n");
-		return;
-	}
-	unsigned long long touse = sysMemStatus.ullTotalVirtual;*/
-	getchar();
+	p->analyzeCommond("mklink t.txt test111");
+	p->analyzeCommond("md 文档");
+	p->analyzeCommond("copy @e:\\文档 文档");
+	p->analyzeCommond("lod @e:\\文档");
+	p->analyzeCommond("save @e:\\SaveTest\\2");
+	p->analyzeCommond("load @e:\\SaveTest\\2");
+
+	//getchar();
 }
 int main()
 {	
@@ -56,14 +55,13 @@ int main()
 	char str[512];
 	while(true)
 	{
+		ZeroMemory(str, 512);
 		p->PrintCursor();
 		scanf_s("%[^\n]",str,512);
 		if (!strcmp(str, "exit"))
 			break;
-		if (!p->analyzeCommond(str))
-			printf("语法命令不正确\n");
-		getchar();
-		ZeroMemory(str,512);
+		p->analyzeCommond(str);
+		getchar();		
 
 	}
 	delete p;

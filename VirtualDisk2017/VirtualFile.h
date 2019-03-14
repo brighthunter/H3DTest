@@ -42,7 +42,7 @@ public:
 	virtual int GetChildrenSize() { return 0; }
 	virtual void SetName(const char* oldChildName, const char* newChildName) { return; }
 	virtual void Encode(std::ofstream& of);
-	virtual void Decode(std::ifstream& inf);
+	virtual bool Decode(std::ifstream& inf);
 private:
 	void* m_mem = nullptr;
 	int m_size = 0;

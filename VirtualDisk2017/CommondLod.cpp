@@ -14,6 +14,6 @@ bool CommondLod::analyzeCommond(std::list<std::string> allSubs)
 	{
 		return false;
 	}
-	VirtualDiskManagerObserver::GetInstance()->Notify_Lod(allSubs.back().c_str());
+ 	VirtualDiskManagerObserver::GetInstance()->Notify_Lod(allSubs.back().c_str());
 	return true;
 }

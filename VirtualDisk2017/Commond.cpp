@@ -8,7 +8,10 @@ bool Commond::analyzeCommondType(std::list<std::string> allSubs)
 	if (allSubs.back() == m_ctype)
 	{
 		allSubs.pop_back();
-		return 	analyzeCommond(allSubs);
+		bool b = analyzeCommond(allSubs);
+		if (!b)
+			printf("语法命令不正确\n");
+		return true;
 	}
 	return false;
 }

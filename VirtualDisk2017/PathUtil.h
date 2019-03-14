@@ -67,15 +67,16 @@ namespace PathUtil
 	{
 		while (fileName.find_last_of("*") != -1)
 		{
-			int num = fileName.find_last_of("*");
+			int num = fileName.find_last_of("*") + 1;
 			if (num != fileName.size())
 			{
-				std::string subfile = fileName.substr(num + 1, fileName.size());
+				std::string subfile = fileName.substr(num, fileName.size());
 				subfiles.push_back(subfile);
 				fileName.erase(num, fileName.size());
 			}
 			else
 			{
+				subfiles.push_back("*");
 				fileName.pop_back();
 			}
 		}
@@ -178,12 +179,49 @@ namespace PathUtil
 		}
 		return fileName;
 	}
+	static bool FindWildcardQues(std::string& toSep, std::string& tmp,bool preIsStar,bool last)
+	{
+		std::list<std::string> sepQues;
+		SeperateQuesMark(toSep, sepQues);
+		auto sepqueIt = sepQues.end();
+		do
+		{
+			--sepqueIt;
+			if (*sepqueIt == "?")
+			{
+				tmp.erase(0, 1);
+			}
+			else
+			{
+				do 
+				{
+					if (tmp.size() == 0)
+						return true;
+					int num = tmp.find(*sepqueIt);
+					if (-1 == num)
+					{
+						return false;
+					}
+					else
+					{
+						if (preIsStar)
+							tmp.erase(0, num + (*sepqueIt).size());
+						else
+						{
+							if (num != 0)
+								return false;
+							tmp.erase(0, num + (*sepqueIt).size());
+						}
+					}
+				} while (last);
+				
+			}
+		} while (sepqueIt != sepQues.begin());
+		return true;
+	}
 	static void FindWildcard(std::list<std::string>& files, std::string name)
 	{
 		std::list<std::string> sepName;
-		bool fstStar = false;
-		if (*name.begin() == '*')
-			fstStar = true;
 		SeperateStar(name, sepName);
 		for (auto it = files.begin(); it != files.end();)
 		{
@@ -195,52 +233,30 @@ namespace PathUtil
 			else
 			{
 				std::string tmp = *it;
-				bool match = true;
+				bool preIsStar = false;
 				auto sepit = sepName.end();
+				bool isMatch = true;;
 				do 
 				{
 					--sepit;
-					if (*sepit == "")
+					if (*sepit == "*")
 					{
-						tmp.erase(0);
+						preIsStar = true;
+						continue;
+					}
+					bool b = FindWildcardQues(*sepit, tmp, preIsStar,sepit == sepName.begin());
+					preIsStar = false;					
+					if (!b)
+					{
+						isMatch = false;
 						break;
 					}
-					std::list<std::string> sepQues;
-					SeperateQuesMark(*sepit, sepQues);		
-					auto sepqueIt = sepQues.end();
-					do 
-					{
-						--sepqueIt;
-						if (*sepqueIt == "?")
-						{
-							tmp.erase(0,1);
-						}
-						else
-						{
-							int num = tmp.find(*sepqueIt);
-							if (-1 == num)
-							{
-								match = false;
-								break;
-							}
-							else
-							{
-								if(fstStar)
-									tmp.erase(0, num + (*sepqueIt).size());
-								else
-									tmp.erase(num, num + (*sepqueIt).size());
-							}
-						}
-					} while (sepqueIt != sepQues.begin());
-					if (!match)
-					{
-						break;
-					}
-					
 				} while (sepit != sepName.begin());
-				if (tmp != "")
-					match = false;
-				if (!match)
+				if (tmp != "" && !preIsStar)
+				{
+					isMatch = false;
+				}
+				if (!isMatch)
 					it = files.erase(it);
 				else
 					++it;
