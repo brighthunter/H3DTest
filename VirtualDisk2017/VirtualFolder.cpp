@@ -69,6 +69,11 @@ bool VirtualFolder::CreateVirtualPath(std::list<std::string> subfiles)
 		else
 		{
 			m_vfChildren[tmp] = new VirtualFolder();
+			if (!m_vfChildren[tmp])
+			{
+				m_vfChildren.erase(tmp);
+				return false;
+			}
 			m_vfChildren[tmp]->Init(this);
 			m_vfChildren[tmp]->SetName(tmp.c_str());
 		}
@@ -271,6 +276,10 @@ bool VirtualFolder::CreateVirtualFile(void *mem, int fsize, const char* dstName)
 		return false;
 	}
 	auto vf = new VirtualFile();
+	if (!vf)
+	{
+		return false;
+	}
 	bool b = vf->SetMemory(mem,fsize);
 	if (!b)
 	{
@@ -524,6 +533,10 @@ bool VirtualFolder::MkLink(std::list<std::string> src, std::list<std::string> ds
 		else
 		{
 			auto link = new VirtualMKLink();
+			if (!link)
+			{
+				return false;
+			}
 			link->Init(src, root);
 			m_vfChildren[tmp] = link;
 			m_vfChildren[tmp]->SetName(tmp.c_str());
@@ -795,6 +808,11 @@ bool VirtualFolder::Decode(std::ifstream& inf)
 			case FOLDER_BLOCK:
 			{
 				auto p = new VirtualFolder();
+				if (!p)
+				{
+					printf("Decode VirtualFolder创建失败\n");
+					return false;
+				}
 				m_vfChildren[childName] = p;
 				m_vfChildren[childName]->Init(this);
 				m_vfChildren[childName]->SetName(childName.c_str());
@@ -805,6 +823,11 @@ bool VirtualFolder::Decode(std::ifstream& inf)
 			case FILE_BLOCK:
 			{
 				auto p = new VirtualFile();
+				if (!p)
+				{
+					printf("Decode VirtualFile创建失败\n");
+					return false;
+				}
 				m_vfChildren[childName] = p;
 				m_vfChildren[childName]->Init(this);
 				m_vfChildren[childName]->SetName(childName.c_str());
@@ -815,6 +838,11 @@ bool VirtualFolder::Decode(std::ifstream& inf)
 			case MKLINK_BLOCK:
 			{
 				auto p = new VirtualMKLink();
+				if (!p)
+				{
+					printf("Decode VirtualMKLink创建失败\n");
+					return false;
+				}
 				m_vfChildren[childName]->Init(this);
 				m_vfChildren[childName]->SetName(childName.c_str());
 				if (!m_vfChildren[childName]->Decode(inf))

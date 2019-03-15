@@ -47,10 +47,20 @@ bool VirtualDiskManager::Init()
 {
 	bool res = true;
 	m_pCommondmanager = new CommondManager();
+	if (!m_pCommondmanager)
+	{
+		printf("m_pCommondmanager创建失败\n");
+		return false;
+	}
 	res &= m_pCommondmanager->Init();
 	m_sdiskName = "v:";
 	RegisterCallback();
 	m_root = new VirtualFolder();
+	if (!m_root)
+	{
+		printf("Root创建失败\n");
+		return false;
+	}
 	m_root->SetName("v:");
 	m_root->SetRoot(true);
 	return res;
@@ -326,6 +336,11 @@ bool VirtualDiskManager::CopyVirtualToVirtual(std::string src, std::string dst)
 		
 		srcPaths.push_front(*it);
 		void** mem = new void*();
+		if (!mem)
+		{
+			printf("mem*指针创建失败\n");
+			return false;
+		}
 		*mem = nullptr;
 		int size = 0;
 		m_root->GetFileMem(srcPaths,mem,size);
@@ -383,6 +398,11 @@ bool VirtualDiskManager::CopyVirtualToRealDisk(std::string src, std::string dst)
 
 		srcPaths.push_front(*it);
 		void** mem = new void*();
+		if (!mem)
+		{
+			printf("mem*指针创建失败\n");
+			return false;
+		}
 		*mem = nullptr;
 		int size = 0;
 		m_root->GetFileMem(srcPaths, mem, size);

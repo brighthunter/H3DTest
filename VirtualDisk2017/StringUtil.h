@@ -26,6 +26,7 @@ namespace StringUtil
 		strtmp[size] = 0;
 		inf.read(strtmp, size);
 		str = strtmp;
+		delete[] strtmp;
 	}
 }
 #endif // !StringUtil_H_

@@ -6,7 +6,7 @@ void TestTool()
 {
 	auto test = PathUtil::GetFileName("E:/ĞéÄâ´ÅÅÌÏîÄ¿/test/ttt/../test2");
 	std::list<std::string> testfiles;
-	PathUtil::GetAllFiles("E:/ĞéÄâ´ÅÅÌÏîÄ¿/test", testfiles);
+	PathUtil::GetAllFiles("E:/Test", testfiles);
 	for (auto it = testfiles.begin(); it != testfiles.end(); it++)
 	{
 		*it = PathUtil::GetFileName(*it);
@@ -17,7 +17,7 @@ void TestTool()
 void Test(VirtualDiskManager *p)
 {
 	//p->analyzeCommond("lod @e:\\ĞéÄâ´ÅÅÌÏîÄ¿\\VirtualDisk2017");
-	p->analyzeCommond("lod @e:\\Test");
+	p->analyzeCommond("lod @E:\\ĞéÄâ´ÅÅÌÏîÄ¿\\VirtualDisk2017");
 	p->analyzeCommond("md Test");
 	p->analyzeCommond("copy @E:\\ĞéÄâ´ÅÅÌÏîÄ¿\\VirtualDisk2017\\.vs\\VirtualDisk2017\\v15 Test");
 	return;
@@ -53,7 +53,10 @@ int main()
 {	
 	//TestTool();
 	VirtualDiskManager *p = new VirtualDiskManager();
-	
+	if (!p)
+	{
+		printf("ĞéÄâ´ÅÅÌ´´½¨Ê§°Ü\n");
+	}
 	if (!p->Init())
 	{
 		printf("Create Virtual Disk Failed\n");
