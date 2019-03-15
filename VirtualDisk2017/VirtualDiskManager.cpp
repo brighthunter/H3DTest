@@ -203,6 +203,8 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 			{
 				FILE* _file;
 				fopen_s(&_file, (*it).c_str(), "rb");
+				if (!_file)
+					continue;
 				fseek(_file, 0, SEEK_END);
 				auto fsize = ftell(_file);
 				void* mem = malloc(fsize);
@@ -214,7 +216,8 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				fread_s(mem, fsize, fsize, 1, _file);
 				fclose(_file);
 				fopen_s(&_file, (*it).c_str(), "wb");
-				
+				if (!_file)
+					continue;
 				free(mem);
 			}
 
@@ -244,7 +247,7 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				if (!_file)
 				{
 					printf("%s ²»´æÔÚ\n", (*it).c_str());
-					return false;
+					continue;
 				}
 				fseek(_file, 0, SEEK_END);
 				auto fsize = ftell(_file);
@@ -257,6 +260,11 @@ bool VirtualDiskManager::CopyRealDiskToRealDisk(std::string src, std::string dst
 				fread_s(mem, fsize, fsize, 1, _file);
 				fclose(_file);
 				fopen_s(&_file, tmp.c_str(), "wb");
+				if (!_file)
+				{
+					free(mem);
+					continue;
+				}
 				fwrite(mem, fsize, 1, _file);
 				free(mem);
 
@@ -383,6 +391,11 @@ bool VirtualDiskManager::CopyVirtualToRealDisk(std::string src, std::string dst)
 			auto tmp = dst + *it;
 			FILE* _file;
 			fopen_s(&_file,tmp.c_str(), "wb");
+			if (!_file)
+			{
+				delete mem;
+				continue;
+			}
 			fwrite(*mem, size, 1, _file);
 			fclose(_file);
 		}
@@ -422,8 +435,12 @@ bool VirtualDiskManager::CopyRealDiskToVirtual(std::string src, std::string dst)
 			}
 			else
 			{
-				FILE* _file;
+				FILE* _file = NULL;
 				fopen_s(&_file,(*it).c_str(), "rb");
+				if (!_file)
+				{
+					continue;
+				}
 				fseek(_file, 0, SEEK_END);
 				auto fsize = ftell(_file);
 				void* mem = malloc(fsize);
@@ -595,6 +612,8 @@ void VirtualDiskManager::Lod(const char* src)
 		{
 			FILE* _file;
 			fopen_s(&_file, (*it).c_str(), "rb");
+			if (!_file)
+				continue;
 			fseek(_file, 0, SEEK_END);
 			auto fsize = ftell(_file);
 			fseek(_file, 0, SEEK_SET);

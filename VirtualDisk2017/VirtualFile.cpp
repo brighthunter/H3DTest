@@ -74,6 +74,8 @@ void VirtualFile::Save(std::string dst)
 	std::string dstName = dst + "/" + m_name;
 	FILE* _file;
 	fopen_s(&_file, dstName.c_str(), "wb");
+	if (!_file)
+		return;
 	fwrite(m_mem, m_size, 1, _file);
 	fclose(_file);
 }

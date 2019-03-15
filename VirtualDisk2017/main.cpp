@@ -16,7 +16,11 @@ void TestTool()
 }
 void Test(VirtualDiskManager *p)
 {
+	//p->analyzeCommond("lod @e:\\ÐéÄâ´ÅÅÌÏîÄ¿\\VirtualDisk2017");
+	p->analyzeCommond("lod @e:\\Test");
 	p->analyzeCommond("md Test");
+	p->analyzeCommond("copy @E:\\ÐéÄâ´ÅÅÌÏîÄ¿\\VirtualDisk2017\\.vs\\VirtualDisk2017\\v15 Test");
+	return;
 	p->analyzeCommond("md Test1");
 	p->analyzeCommond("copy @e:\\Test\\t.txt Test");
 	p->analyzeCommond("copy Test\\t.txt Test1");
